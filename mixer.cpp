@@ -5,23 +5,7 @@ MixerThread::MixerThread() {
 	init_alsa();
 }
 
-void MixerThread::run() {
-	qDebug() << "run()";
-	do {
-		Mixer *m = mixer;
-		while(m) {
-			if (alsa_mixer_get_volume(m) == 1) {
-				display_osd(m);
-				//app.processEvents();
-			}
-
-			m = m->next;
-		}
-	} while (!mixer_iteration(-1));
-}
-
-/*
-void MixerThread::alsa_mixer_exit()
+MixerThread::~MixerThread()
 {
 	Mixer *m = mixer;
 	while (m) {
@@ -29,14 +13,25 @@ void MixerThread::alsa_mixer_exit()
 		m = m->next;
 		free(tmp);
 	}
-	//xosd_destroy(osd);
 	free(alsa_mixer_device);
 	snd_mixer_close(alsa_mixer_handle);
-	exit(0);
 }
-*/
 
-int MixerThread::alsa_mixer_open() {
+void
+MixerThread::run() {
+	do {
+		Mixer *m = mixer;
+		while(m) {
+			if (alsa_mixer_get_volume(m) == 1)
+				display_osd(m);
+
+			m = m->next;
+		}
+	} while (!mixer_iteration(-1));
+}
+
+int
+MixerThread::alsa_mixer_open() {
 	snd_mixer_selem_id_t *sid;
 	snd_mixer_elem_t *elem;
 	int count;
@@ -84,7 +79,8 @@ int MixerThread::alsa_mixer_open() {
 	return SUCCESS;
 }
 
-int MixerThread::alsa_mixer_get_volume(Mixer *m) {
+int
+MixerThread::alsa_mixer_get_volume(Mixer *m) {
 	long lv = 0, rv = 0;
 
 	int old_vol_left = 0;
@@ -122,7 +118,8 @@ int MixerThread::alsa_mixer_get_volume(Mixer *m) {
 	return 0;
 }
 
-Mixer* MixerThread::get_new_mixer() {
+Mixer*
+MixerThread::get_new_mixer() {
 	Mixer *m = NULL;
 	if ((m = (Mixer*) malloc(sizeof(Mixer))) == NULL) {
 		fprintf(stderr, "Error: Couldn't alloc mixer\n");
@@ -141,21 +138,8 @@ Mixer* MixerThread::get_new_mixer() {
 	return m;
 }
 
-/*
-xosd* init_xosd(int lines) {
-	xosd *osd = xosd_create(lines);
-
-	xosd_set_shadow_offset (osd, OSD_SHADOW);
-	xosd_set_pos (osd, XOSD_bottom);
-	xosd_set_vertical_offset (osd, OSD_VOFFSET);
-	xosd_set_align (osd, XOSD_center);
-	xosd_set_font (osd, OSD_FONT);
-	xosd_set_timeout(osd, 1);
-	return osd;
-}
-*/
-
-void MixerThread::init_alsa() {
+void
+MixerThread::init_alsa() {
 	alsa_mixer_device = strdup("default");
 	mixer = get_new_mixer();
 
@@ -167,24 +151,17 @@ void MixerThread::init_alsa() {
 	}
 }
 
-void MixerThread::display_osd(Mixer *m) {
-	char *muted = "";
-	printf("show %s\n", m->name);
+void
+MixerThread::display_osd(Mixer *m) {
+	char *muted = strdup("");
 
 	if (strncmp(m->name, "Master", 6) != 0)
 		return;
 
 	if (m->muted_left && m->muted_right)
 		muted = strdup("(muted)");
-	/*
-	else if (m->muted_left)
-		muted = strdup("(left muted)");
-	else if (m->muted_right)
-		muted = strdup("(right muted)");
-	*/
 
 	emit valueChanged(m->name, m->vol_left, m->muted_left && m->muted_right);
-
 }
 
 int

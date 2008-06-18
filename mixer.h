@@ -30,6 +30,7 @@ class MixerThread : public QThread {
 
 	public:
 		MixerThread();
+		~MixerThread();
 		void run();
 
 		int alsa_mixer_get_volume(Mixer*);
@@ -39,7 +40,6 @@ class MixerThread : public QThread {
 		void display_osd(Mixer*);
 		int mixer_iteration(int);
 
-		//static xosd *osd;
 		Mixer *mixer;
 
 		snd_mixer_t *alsa_mixer_handle;

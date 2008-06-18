@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2007 Christof Musik, Timo Hirvonen
+ * Copyright 2004-2008 Christof Musik, Timo Hirvonen
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -20,46 +20,20 @@
 #define ALSA_PCM_NEW_HW_PARAMS_API
 #define ALSA_PCM_NEW_SW_PARAMS_API
 
-//#include <alsa/asoundlib.h>
-//#include <unistd.h>
-//#include <xosd.h>
-#include <string.h>
-#include <signal.h>
-
-#include "mixer.h"
 
 #include <OSD.h>
 #include <QApplication>
 
-// Configuration
-#define OSD_FONT "-*-verdana-medium-r-*-*-30-*-*-*-*-*-*-15"
-#define OSD_VOFFSET 30
-#define OSD_SHADOW 3
-
-OSD *osd;
-
-
+#include "mixer.h"
 
 int main (int argc, char *argv[]) {
-	//osd = init_xosd(2);
-	//init_alsa();
-
 	QApplication app(argc, argv);
-	osd = new OSD();
+	OSD *osd = new OSD();
 	MixerThread *t = new MixerThread();
 	QObject::connect(t, SIGNAL(valueChanged(char*, int, bool)), osd, SLOT(setValue(char*, int, bool)));
 	t->start();
 
 	int ret = app.exec();
-
-
-
-	// Signal handler
-	//struct sigaction sig;
-	//sig.sa_handler = alsa_mixer_exit;
-	//sigemptyset (&sig.sa_mask);
-	//sigaction(SIGINT, &sig, NULL);
-
 
 	delete osd;
 	return ret;

@@ -21,7 +21,7 @@
 #define ALSA_PCM_NEW_SW_PARAMS_API
 
 
-#include <OSD.h>
+#include <osd.h>
 #include <QApplication>
 
 #include "mixer.h"

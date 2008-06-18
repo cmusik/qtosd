@@ -1,4 +1,4 @@
-#include "OSD.h"
+#include "osd.h"
 #include <QDesktopWidget>
 #include <QDebug>
 

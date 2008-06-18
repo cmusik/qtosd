@@ -10,6 +10,6 @@ QMAKE_CXXFLAGS = -I/usr/include/alsa -lasound
 QMAKE_LFLAGS += -lasound
 
 # Input
-HEADERS += OSD.h mixer.h
+HEADERS += osd.h mixer.h
 FORMS += osd.ui
-SOURCES += main.cpp OSD.cpp mixer.cpp
+SOURCES += main.cpp osd.cpp mixer.cpp

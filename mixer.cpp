@@ -5,8 +5,7 @@ MixerThread::MixerThread() {
 	init_alsa();
 }
 
-MixerThread::~MixerThread()
-{
+MixerThread::~MixerThread() {
 	Mixer *m = mixer;
 	while (m) {
 		Mixer *tmp = m;
@@ -20,14 +19,17 @@ MixerThread::~MixerThread()
 void
 MixerThread::run() {
 	do {
+		snd_mixer_handle_events(alsa_mixer_handle);
 		Mixer *m = mixer;
-		while(m) {
+		while (m) {
 			if (alsa_mixer_get_volume(m) == 1)
 				display_osd(m);
 
 			m = m->next;
 		}
-	} while (!mixer_iteration(-1));
+	} while (!snd_mixer_wait(alsa_mixer_handle, -1));
+
+	qDebug() << "end";
 }
 
 int
@@ -96,16 +98,21 @@ MixerThread::alsa_mixer_get_volume(Mixer *m) {
 	old_muted_left = m->muted_left;
 	old_muted_right = m->muted_right;
 
-	snd_mixer_selem_get_playback_volume(m->mixer_elem, SND_MIXER_SCHN_FRONT_LEFT, &lv);
-	snd_mixer_selem_get_playback_volume(m->mixer_elem, SND_MIXER_SCHN_FRONT_RIGHT, &rv);
-	snd_mixer_selem_get_playback_switch(m->mixer_elem, SND_MIXER_SCHN_FRONT_LEFT, &m->muted_left);
-	snd_mixer_selem_get_playback_switch(m->mixer_elem, SND_MIXER_SCHN_FRONT_RIGHT, &m->muted_right);
+	if (snd_mixer_selem_has_playback_channel(m->mixer_elem, SND_MIXER_SCHN_FRONT_LEFT))
+		snd_mixer_selem_get_playback_volume(m->mixer_elem, SND_MIXER_SCHN_FRONT_LEFT, &lv);
+	if (snd_mixer_selem_has_playback_channel(m->mixer_elem, SND_MIXER_SCHN_FRONT_RIGHT))
+		snd_mixer_selem_get_playback_volume(m->mixer_elem, SND_MIXER_SCHN_FRONT_RIGHT, &rv);
 
 	m->vol_left = ((float) (lv - m->mixer_vol_min) / m->mixer_vol_max)*100.0+0.5;
 	m->vol_right = ((float) (rv - m->mixer_vol_min) / m->mixer_vol_max)*100.0+0.5;
 
-	m->muted_left = !m->muted_left;
-	m->muted_right = !m->muted_right;
+	if (snd_mixer_selem_has_playback_switch(m->mixer_elem)) {
+		snd_mixer_selem_get_playback_switch(m->mixer_elem, SND_MIXER_SCHN_FRONT_LEFT, &m->muted_left);
+		snd_mixer_selem_get_playback_switch(m->mixer_elem, SND_MIXER_SCHN_FRONT_RIGHT, &m->muted_right);
+
+		m->muted_left = !m->muted_left;
+		m->muted_right = !m->muted_right;
+	}
 
 	// volume has changed
 	if (	m->vol_left != old_vol_left ||
@@ -155,48 +162,8 @@ void
 MixerThread::display_osd(Mixer *m) {
 	char *muted = strdup("");
 
-	if (strncmp(m->name, "Master", 6) != 0)
-		return;
-
-	if (m->muted_left && m->muted_right)
+	if (m->muted_left == 0 && m->muted_right == 0)
 		muted = strdup("(muted)");
 
 	emit valueChanged(m->name, m->vol_left, m->muted_left && m->muted_right);
 }
-
-int
-MixerThread::mixer_iteration (int timeout) {
-	int count, err;
-	struct pollfd *fds;
-	unsigned short revents;
-
-	if ((count = snd_mixer_poll_descriptors_count(alsa_mixer_handle)) < 0) {
-		return 1;
-	}
-	fds = (struct pollfd*) calloc(count, sizeof(struct pollfd));
-	if (fds == NULL) {
-		return 1;
-	}
-	if ((err = snd_mixer_poll_descriptors(alsa_mixer_handle, fds, count)) < 0) {
-		return 1;
-	}
-	if (err != count) {
-		return 1;
-	}
-
-	if (poll(fds, count, timeout) > 0) {
-		if (snd_mixer_poll_descriptors_revents(alsa_mixer_handle, fds, count, &revents) >= 0) {
-			if (revents & POLLNVAL)
-				return 1;
-			if (revents & POLLERR)
-				return 1;
-			if (revents & POLLIN)
-				snd_mixer_handle_events(alsa_mixer_handle);
-		}
-	}
-
-	free(fds);
-
-	return 0;
-}
-

@@ -38,7 +38,6 @@ class MixerThread : public QThread {
 		Mixer* get_new_mixer();
 		void init_alsa();
 		void display_osd(Mixer*);
-		int mixer_iteration(int);
 
 		Mixer *mixer;
 

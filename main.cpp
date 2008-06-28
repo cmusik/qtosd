@@ -25,16 +25,52 @@
 #include <QApplication>
 
 #include "mixer.h"
+#include <X11/extensions/Xrender.h>
+
 
 int main (int argc, char *argv[]) {
-	QApplication app(argc, argv);
-	OSD *osd = new OSD();
+	bool  argbVisual=false;
+	Display *dpy = XOpenDisplay(0); // open default display
+	if (!dpy) {
+		qWarning("Cannot connect to the X server");
+		exit(1);
+	}
+
+	int screen = DefaultScreen(dpy);
+	Colormap colormap = 0;
+	Visual *visual = 0;
+	int eventBase, errorBase;
+
+	if (XRenderQueryExtension(dpy, &eventBase, &errorBase)) {
+		int nvi;
+		XVisualInfo templ;
+		templ.screen  = screen;
+		templ.depth   = 32;
+		templ.c_class = TrueColor;
+		XVisualInfo *xvi = XGetVisualInfo(dpy, VisualScreenMask |
+				VisualDepthMask |
+				VisualClassMask, &templ, &nvi);
+
+		for (int i = 0; i < nvi; ++i) {
+			XRenderPictFormat *format = XRenderFindVisualFormat(dpy,
+					xvi[i].visual);
+			if (format->type == PictTypeDirect && format->direct.alphaMask) {
+				visual = xvi[i].visual;
+				colormap = XCreateColormap(dpy, RootWindow(dpy, screen),
+						visual, AllocNone);
+				argbVisual=true;
+				break;
+			}
+		}
+	}
+
+	QApplication app(dpy, argc, argv,
+			Qt::HANDLE(visual), Qt::HANDLE(colormap));
+
+	OSD osd;
 	MixerThread *t = new MixerThread();
-	QObject::connect(t, SIGNAL(valueChanged(char*, int, bool)), osd, SLOT(setValue(char*, int, bool)));
+	QObject::connect(t, SIGNAL(valueChanged(char*, int, bool)), &osd, SLOT(setValue(char*, int, bool)));
 	t->start();
 
-	int ret = app.exec();
-
-	delete osd;
-	return ret;
+	return app.exec();
 }

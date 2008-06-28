@@ -28,8 +28,6 @@ MixerThread::run() {
 			m = m->next;
 		}
 	} while (!snd_mixer_wait(alsa_mixer_handle, -1));
-
-	qDebug() << "end";
 }
 
 int
@@ -65,17 +63,31 @@ MixerThread::alsa_mixer_open() {
 
 	while (elem) {
 		snd_mixer_selem_get_id(elem, sid);
-		if (snd_mixer_selem_has_playback_volume(elem)) {
+		if (snd_mixer_selem_has_playback_volume(elem) && snd_mixer_selem_has_playback_channel(elem, SND_MIXER_SCHN_FRONT_LEFT)) {
+			m->type = 1;
 			snd_mixer_selem_get_playback_volume_range(elem, &m->mixer_vol_min, &m->mixer_vol_max);
-
-			m->name = strdup(snd_mixer_selem_id_get_name(sid));
-			m->mixer_elem = elem;
-
-			alsa_mixer_get_volume(m);
-
-			m->next = get_new_mixer();
-			m = m->next;
+			if (snd_mixer_selem_has_playback_switch(elem))
+				m->has_switch = 1;
 		}
+		else if (snd_mixer_selem_has_capture_volume(elem) && snd_mixer_selem_has_capture_channel(elem, SND_MIXER_SCHN_FRONT_LEFT)) {
+			m->type = 2;
+			snd_mixer_selem_get_capture_volume_range(elem, &m->mixer_vol_min, &m->mixer_vol_max);
+			if (snd_mixer_selem_has_capture_switch(elem))
+				m->has_switch = 1;
+		}
+		else {
+			elem = snd_mixer_elem_next(elem);
+			continue;
+		}
+
+		m->name = strdup(snd_mixer_selem_id_get_name(sid));
+		m->mixer_elem = elem;
+
+		alsa_mixer_get_volume(m);
+
+		m->next = get_new_mixer();
+		m = m->next;
+
 		elem = snd_mixer_elem_next(elem);
 	}
 	return SUCCESS;
@@ -98,20 +110,39 @@ MixerThread::alsa_mixer_get_volume(Mixer *m) {
 	old_muted_left = m->muted_left;
 	old_muted_right = m->muted_right;
 
-	if (snd_mixer_selem_has_playback_channel(m->mixer_elem, SND_MIXER_SCHN_FRONT_LEFT))
-		snd_mixer_selem_get_playback_volume(m->mixer_elem, SND_MIXER_SCHN_FRONT_LEFT, &lv);
-	if (snd_mixer_selem_has_playback_channel(m->mixer_elem, SND_MIXER_SCHN_FRONT_RIGHT))
-		snd_mixer_selem_get_playback_volume(m->mixer_elem, SND_MIXER_SCHN_FRONT_RIGHT, &rv);
+	if (m->type == 1) {
+		if (snd_mixer_selem_has_playback_channel(m->mixer_elem, SND_MIXER_SCHN_FRONT_LEFT))
+			snd_mixer_selem_get_playback_volume(m->mixer_elem, SND_MIXER_SCHN_FRONT_LEFT, &lv);
+		if (snd_mixer_selem_has_playback_channel(m->mixer_elem, SND_MIXER_SCHN_FRONT_RIGHT))
+			snd_mixer_selem_get_playback_volume(m->mixer_elem, SND_MIXER_SCHN_FRONT_RIGHT, &rv);
 
-	m->vol_left = ((float) (lv - m->mixer_vol_min) / m->mixer_vol_max)*100.0+0.5;
-	m->vol_right = ((float) (rv - m->mixer_vol_min) / m->mixer_vol_max)*100.0+0.5;
+		m->vol_left = ((float) (lv - m->mixer_vol_min) / m->mixer_vol_max)*100.0+0.5;
+		m->vol_right = ((float) (rv - m->mixer_vol_min) / m->mixer_vol_max)*100.0+0.5;
 
-	if (snd_mixer_selem_has_playback_switch(m->mixer_elem)) {
-		snd_mixer_selem_get_playback_switch(m->mixer_elem, SND_MIXER_SCHN_FRONT_LEFT, &m->muted_left);
-		snd_mixer_selem_get_playback_switch(m->mixer_elem, SND_MIXER_SCHN_FRONT_RIGHT, &m->muted_right);
+		if (m->has_switch) {
+			snd_mixer_selem_get_playback_switch(m->mixer_elem, SND_MIXER_SCHN_FRONT_LEFT, &m->muted_left);
+			snd_mixer_selem_get_playback_switch(m->mixer_elem, SND_MIXER_SCHN_FRONT_RIGHT, &m->muted_right);
 
-		m->muted_left = !m->muted_left;
-		m->muted_right = !m->muted_right;
+			m->muted_left = !m->muted_left;
+			m->muted_right = !m->muted_right;
+		}
+	}
+	else {
+		if (snd_mixer_selem_has_capture_channel(m->mixer_elem, SND_MIXER_SCHN_FRONT_LEFT))
+			snd_mixer_selem_get_capture_volume(m->mixer_elem, SND_MIXER_SCHN_FRONT_LEFT, &lv);
+		if (snd_mixer_selem_has_capture_channel(m->mixer_elem, SND_MIXER_SCHN_FRONT_RIGHT))
+			snd_mixer_selem_get_capture_volume(m->mixer_elem, SND_MIXER_SCHN_FRONT_RIGHT, &rv);
+
+		m->vol_left = ((float) (lv - m->mixer_vol_min) / m->mixer_vol_max)*100.0+0.5;
+		m->vol_right = ((float) (rv - m->mixer_vol_min) / m->mixer_vol_max)*100.0+0.5;
+
+		if (m->has_switch) {
+			snd_mixer_selem_get_capture_switch(m->mixer_elem, SND_MIXER_SCHN_FRONT_LEFT, &m->muted_left);
+			snd_mixer_selem_get_capture_switch(m->mixer_elem, SND_MIXER_SCHN_FRONT_RIGHT, &m->muted_right);
+
+			m->muted_left = !m->muted_left;
+			m->muted_right = !m->muted_right;
+		}
 	}
 
 	// volume has changed
@@ -141,6 +172,8 @@ MixerThread::get_new_mixer() {
 	m->vol_right = -1;
 	m->muted_left = 0;
 	m->muted_right = 0;
+	m->type = 1;
+	m->has_switch = 0;
 	m->next = NULL;
 	return m;
 }
@@ -162,7 +195,7 @@ void
 MixerThread::display_osd(Mixer *m) {
 	char *muted = strdup("");
 
-	if (m->muted_left == 0 && m->muted_right == 0)
+	if (m->has_switch && m->muted_left == 0 && m->muted_right == 0)
 		muted = strdup("(muted)");
 
 	emit valueChanged(m->name, m->vol_left, m->muted_left && m->muted_right);

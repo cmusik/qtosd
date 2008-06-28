@@ -17,6 +17,8 @@ struct mixer {
 	int old_vol_right;
 	int muted_left;
 	int muted_right;
+	int type;
+	int has_switch;
 	Mixer *next;
 };
 

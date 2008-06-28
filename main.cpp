@@ -17,9 +17,6 @@
  * 02111-1307, USA.
  */
 
-#define ALSA_PCM_NEW_HW_PARAMS_API
-#define ALSA_PCM_NEW_SW_PARAMS_API
-
 
 #include <osd.h>
 #include <QApplication>

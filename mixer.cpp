@@ -193,10 +193,5 @@ MixerThread::init_alsa() {
 
 void
 MixerThread::display_osd(Mixer *m) {
-	char *muted = strdup("");
-
-	if (m->has_switch && m->muted_left == 0 && m->muted_right == 0)
-		muted = strdup("(muted)");
-
-	emit valueChanged(m->name, m->vol_left, m->muted_left && m->muted_right);
+	emit valueChanged(m->name, m->vol_left, (m->has_switch && m->muted_left && m->muted_right));
 }

@@ -39,6 +39,7 @@ class OSD : public QDialog, private Ui::OSD {
 
 	public slots:
 		void setValue(char *, int, bool);
+		void setText(QString);
 
 	private:
 		QTimer *timer;

@@ -11,6 +11,6 @@ QMAKE_LFLAGS += -lasound
 QT += svg
 
 # Input
-HEADERS += osd.h mixer.h
+HEADERS += osd.h mixer.h reader.h
 FORMS += osd.ui
-SOURCES += main.cpp osd.cpp mixer.cpp
+SOURCES += main.cpp osd.cpp mixer.cpp reader.cpp

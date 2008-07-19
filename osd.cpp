@@ -36,6 +36,16 @@ void OSD::setValue(char* s, int v, bool m) {
 	show();
 }
 
+void OSD::setText(QString s) {
+	label->setText(QString(s));
+
+	timer->start(2000);
+	QDesktopWidget w;
+	QRect r = w.screenGeometry(0);
+	move(r.x()+((r.width()-width())/2), r.y()+((r.height()-height())/2)+400);
+	show();
+}
+
 void OSD::paintEvent(QPaintEvent *e) {
 	QPainter p(this);
 	p.setRenderHint(QPainter::Antialiasing);

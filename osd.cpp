@@ -20,6 +20,10 @@ OSD::OSD() : QDialog() {
 
 	renderer = new QSvgRenderer(QLatin1String("/home/christof/src/osd/background.svg"), this);
 	dirty = true;
+
+	QDesktopWidget w;
+	QRect r = w.screenGeometry(0);
+	move(r.x()+((r.width()-width())/2), r.y()+((r.height()-height())/2)+400);
 }
 
 void OSD::setValue(char* s, int v, bool m) {
@@ -29,20 +33,17 @@ void OSD::setValue(char* s, int v, bool m) {
 		label->setText(QString(s));
 
 	value->setValue(v);
+	stackedWidget->setCurrentIndex(0);
 	timer->start(2000);
-	QDesktopWidget w;
-	QRect r = w.screenGeometry(0);
-	move(r.x()+((r.width()-width())/2), r.y()+((r.height()-height())/2)+400);
 	show();
 }
 
 void OSD::setText(QString s) {
-	label->setText(QString(s));
+	stackedWidget->setCurrentIndex(1);
+	//label_2->setText(label_2->text().append(s));
+	label_2->append(s);
 
 	timer->start(2000);
-	QDesktopWidget w;
-	QRect r = w.screenGeometry(0);
-	move(r.x()+((r.width()-width())/2), r.y()+((r.height()-height())/2)+400);
 	show();
 }
 
@@ -74,4 +75,7 @@ void OSD::resizeEvent(QResizeEvent *e) {
 	}
 }
 
+void OSD::hideEvent(QHideEvent *e) {
+	label_2->setText("");
+}
 

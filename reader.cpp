@@ -5,10 +5,6 @@
 
 
 Reader::Reader() : QObject() {
-
-
-	qDebug() << "open...";
-
 	m_file = new QFile("/tmp/fifo");
 	m_file->open(QIODevice::ReadWrite|QIODevice::Text);
 
@@ -19,7 +15,6 @@ Reader::Reader() : QObject() {
 		exit (1);
 	}
 	*/
-	qDebug() << "done.";
 
 	//m_notify = new QSocketNotifier (fd, QSocketNotifier::Read);
 
@@ -29,8 +24,7 @@ Reader::Reader() : QObject() {
 }
 
 void Reader::read(int socket) {
-	//qDebug() << "reading..." << socket;
-	//m_notify->setEnabled(false);
+	qDebug() << "reading..." << socket;
 
 	/*
 	char    big_buf[8192];          // This is just a demo
@@ -46,15 +40,29 @@ void Reader::read(int socket) {
 	*/
 
 
-	char buf[1024];
+	char *buf;
+	buf = (char*) calloc(1, 1024);
+	m_file->read(buf, 1024);
+	qDebug() << buf;
+	emit showText(QString(buf));
+
+	free(buf);
+
 	//if (m_file->bytesAvailable()) {
 	
+	/*
 	QString str = QString(m_file->readLine()).trimmed();
+	qDebug() << m_file->canReadLine();
 
 	emit showText(str);
+	*/
+
+	/*
+	QByteArray ar = m_file->readAll();
+	qDebug() << ar;
+	*/
 
 		//qint64 lineLength = m_file->readLine(buf, sizeof(buf));
 		//qDebug() << buf;
 	//}
-	//m_notify->setEnabled(true);
 }

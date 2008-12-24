@@ -41,7 +41,10 @@ void OSD::setValue(char* s, int v, bool m) {
 void OSD::setText(QString s) {
 	stackedWidget->setCurrentIndex(1);
 	//label_2->setText(label_2->text().append(s));
-	label_2->append(s);
+	label_2->setFont(QFont("Helvetica", 12));
+	label_2->setAlignment(Qt::AlignCenter);
+	//label_2->setText(s);
+	label_2->append("<div style='text-align:center'>"+s+"</div>");
 
 	timer->start(2000);
 	show();

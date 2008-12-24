@@ -83,14 +83,6 @@
       <number>1</number>
      </property>
      <widget class="QWidget" name="page" >
-      <property name="geometry" >
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>648</width>
-        <height>110</height>
-       </rect>
-      </property>
       <layout class="QVBoxLayout" name="verticalLayout_2" >
        <item>
         <widget class="QLabel" name="label" >
@@ -577,7 +569,7 @@
       </layout>
      </widget>
      <widget class="QWidget" name="Seite" >
-      <layout class="QVBoxLayout" name="verticalLayout_3" >
+      <layout class="QHBoxLayout" name="horizontalLayout" >
        <item>
         <widget class="QTextBrowser" name="label_2" >
          <property name="palette" >
@@ -592,6 +584,15 @@
               </color>
              </brush>
             </colorrole>
+            <colorrole role="Light" >
+             <brush brushstyle="SolidPattern" >
+              <color alpha="255" >
+               <red>255</red>
+               <green>255</green>
+               <blue>255</blue>
+              </color>
+             </brush>
+            </colorrole>
             <colorrole role="Text" >
              <brush brushstyle="SolidPattern" >
               <color alpha="255" >
@@ -604,9 +605,9 @@
             <colorrole role="Base" >
              <brush brushstyle="SolidPattern" >
               <color alpha="0" >
-               <red>0</red>
-               <green>0</green>
-               <blue>0</blue>
+               <red>255</red>
+               <green>255</green>
+               <blue>255</blue>
               </color>
              </brush>
             </colorrole>
@@ -621,6 +622,15 @@
               </color>
              </brush>
             </colorrole>
+            <colorrole role="Light" >
+             <brush brushstyle="SolidPattern" >
+              <color alpha="255" >
+               <red>255</red>
+               <green>255</green>
+               <blue>255</blue>
+              </color>
+             </brush>
+            </colorrole>
             <colorrole role="Text" >
              <brush brushstyle="SolidPattern" >
               <color alpha="255" >
@@ -633,9 +643,9 @@
             <colorrole role="Base" >
              <brush brushstyle="SolidPattern" >
               <color alpha="0" >
-               <red>0</red>
-               <green>0</green>
-               <blue>0</blue>
+               <red>255</red>
+               <green>255</green>
+               <blue>255</blue>
               </color>
              </brush>
             </colorrole>
@@ -647,6 +657,15 @@
                <red>128</red>
                <green>128</green>
                <blue>128</blue>
+              </color>
+             </brush>
+            </colorrole>
+            <colorrole role="Light" >
+             <brush brushstyle="SolidPattern" >
+              <color alpha="255" >
+               <red>255</red>
+               <green>255</green>
+               <blue>255</blue>
               </color>
              </brush>
             </colorrole>
@@ -677,12 +696,21 @@
          <property name="horizontalScrollBarPolicy" >
           <enum>Qt::ScrollBarAlwaysOff</enum>
          </property>
+         <property name="lineWrapMode" >
+          <enum>QTextEdit::NoWrap</enum>
+         </property>
          <property name="html" >
           <string>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
 &lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
 p, li { white-space: pre-wrap; }
 &lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:8pt; font-weight:400; font-style:normal;">
-&lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt;">&lt;/p>&lt;/body>&lt;/html></string>
+&lt;p align="center" style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;/p>&lt;/body>&lt;/html></string>
+         </property>
+         <property name="textInteractionFlags" >
+          <set>Qt::NoTextInteraction</set>
+         </property>
+         <property name="openLinks" >
+          <bool>false</bool>
          </property>
         </widget>
        </item>

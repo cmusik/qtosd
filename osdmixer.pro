@@ -8,7 +8,7 @@ DEPENDPATH += .
 INCLUDEPATH += .
 QMAKE_CXXFLAGS = -I/usr/include/alsa -lasound
 QMAKE_LFLAGS += -lasound
-QT += svg
+QT += svg network
 
 # Input
 HEADERS += osd.h mixer.h reader.h

@@ -34,6 +34,12 @@ OSD::OSD() : QDialog() {
 	renderer = new QSvgRenderer(QLatin1String("/home/christof/src/osd/background.svg"), this);
 	dirty = true;
 
+	label_1->setFixedWidth(600);
+	label_1->setFixedHeight(label_1->fontMetrics().height());
+	label_2->setFixedWidth(600);
+	label_2->setFixedHeight(80);
+	label_2->setAlignment(Qt::AlignCenter);
+
 	QDesktopWidget w;
 	QRect r = w.screenGeometry(0);
 	move(r.x()+((r.width()-width())/2), r.y()+((r.height()-height())/2)+400);
@@ -41,10 +47,12 @@ OSD::OSD() : QDialog() {
 }
 
 void OSD::setText(QString s) {
-	QRegExp rx("(\\d+)/(\\d+) (.*)");
+	QRegExp rx("^(\\d+)/(\\d+) (.*)");
 	if (rx.exactMatch(s)) {
 		stackedWidget->setCurrentWidget(page_1);
 		QStringList l = rx.capturedTexts();
+
+		l[3] = label_1->fontMetrics().elidedText(l[3], Qt::ElideMiddle, 600);
 
 		label_1->setText(l[3]);
 		value_1->setMaximum(l[2].toInt());
@@ -54,10 +62,6 @@ void OSD::setText(QString s) {
 		stackedWidget->setCurrentWidget(page_2);
 
 		s = label_2->fontMetrics().elidedText(s, Qt::ElideMiddle, 600);
-		label_2->setFixedWidth(600);
-		label_2->setFixedHeight(80);
-		label_2->setFont(QFont("Helvetica", 12));
-		label_2->setAlignment(Qt::AlignCenter);
 
 		if (text->count() >= 4) {
 			text->removeFirst();
@@ -100,6 +104,5 @@ void OSD::resizeEvent(QResizeEvent *e) {
 }
 
 void OSD::hideEvent(QHideEvent *) {
-	label_2->setText("");
 	text->clear();
 }

@@ -42,7 +42,6 @@ class Reader : public QThread {
 		void receivedText(QString);
 
 	private:
-		QTcpServer *srv;
 		QTcpSocket *connection;
 
 };

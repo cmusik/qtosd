@@ -21,7 +21,6 @@
 #include "reader.h"
 
 ReaderServer::ReaderServer(OSD *g, QObject *parent) : QTcpServer(parent), gui(g) {
-	listen(QHostAddress::LocalHost, 5000);
 }
 
 void ReaderServer::incomingConnection(int socket) {

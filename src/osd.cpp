@@ -17,18 +17,12 @@
   along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 
 */
-#include "osd.h"
 #include <QDesktopWidget>
 #include <QDebug>
-
-
-#include <QSvgRenderer>
 #include <QPainter>
-#include <QPaintEvent>
-#include <QPen>
-#include <QBrush>
 #include <QRegExp>
 
+#include "osd.h"
 
 
 OSD::OSD() : QDialog() {

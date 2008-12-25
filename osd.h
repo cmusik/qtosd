@@ -40,7 +40,6 @@ class OSD : public QDialog, private Ui::OSD {
 		virtual void hideEvent(QHideEvent *e);
 
 	public slots:
-		void setValue(QString, int, bool);
 		void setText(QString);
 
 	private:

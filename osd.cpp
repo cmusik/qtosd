@@ -27,48 +27,34 @@ OSD::OSD() : QDialog() {
 	text = new QStringList();
 }
 
-void OSD::setValue(QString s, int v, bool m) {
-	if (m)
-		label->setText(s+" (muted)");
-	else
-		label->setText(s);
-
-	value->setMaximum(100);
-	value->setValue(v);
-	stackedWidget->setCurrentIndex(0);
-	timer->start(2000);
-	show();
-}
-
 void OSD::setText(QString s) {
 	QRegExp rx("(\\d+)/(\\d+) (.*)");
 	if (rx.exactMatch(s)) {
-		stackedWidget->setCurrentIndex(0);
+		stackedWidget->setCurrentWidget(page_1);
 		QStringList l = rx.capturedTexts();
 
-		label->setText(l[3]);
-		value->setMaximum(l[2].toInt());
-		value->setValue(l[1].toInt());
+		label_1->setText(l[3]);
+		value_1->setMaximum(l[2].toInt());
+		value_1->setValue(l[1].toInt());
 	}
 	else {
-		stackedWidget->setCurrentIndex(2);
+		stackedWidget->setCurrentWidget(page_2);
 
-		label_3->setWordWrap(true);
-		label_3->setFixedWidth(600);
-		label_3->setFixedHeight(80);
-		label_3->setFont(QFont("Helvetica", 12));
-		label_3->setAlignment(Qt::AlignCenter);
+		label_2->setWordWrap(true);
+		label_2->setFixedWidth(600);
+		label_2->setFixedHeight(80);
+		label_2->setFont(QFont("Helvetica", 12));
+		label_2->setAlignment(Qt::AlignCenter);
 
 		if (text->count() >= 4) {
 			text->removeFirst();
 		}
-		(*text) << s; //->push_back(s);
+		(*text) << s;
 
-
-		label_3->setText(text->join(QString('\n')));
+		label_2->setText(text->join(QString('\n')));
 	}
 
-	timer->start(2000);
+	timer->start(4000);
 	show();
 }
 

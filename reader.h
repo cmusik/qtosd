@@ -14,7 +14,6 @@ class Reader : public QObject {
 		Reader();
 	
 	public slots:
-		void read(int);
 		void handleConnection();
 		void readSocket();
 
@@ -24,10 +23,8 @@ class Reader : public QObject {
 	private:
 		QTcpServer *srv;
 		QTcpSocket *connection;
-		QFile *m_file;
-		QSocketNotifier *m_notify;
 
 };
 
-#endif   /* ----- #ifndef READER_INC  ----- */
+#endif
 

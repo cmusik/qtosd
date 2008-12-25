@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QStringList>
 #include "reader.h"
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -81,5 +82,8 @@ void Reader::handleConnection() {
 }
 
 void Reader::readSocket() {
-	emit showText(QString::fromUtf8(connection->readAll()));
+	QString str = QString::fromUtf8(connection->readAll());
+	foreach (QString s, str.split('\n')) {
+		emit showText(s);
+	}
 }

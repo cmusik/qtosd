@@ -8,7 +8,7 @@
 #include <QPaintEvent>
 #include <QPen>
 #include <QBrush>
-#include <QCheckBox>
+#include <QRegExp>
 
 
 
@@ -24,14 +24,16 @@ OSD::OSD() : QDialog() {
 	QDesktopWidget w;
 	QRect r = w.screenGeometry(0);
 	move(r.x()+((r.width()-width())/2), r.y()+((r.height()-height())/2)+400);
+	text = new QStringList();
 }
 
-void OSD::setValue(char* s, int v, bool m) {
+void OSD::setValue(QString s, int v, bool m) {
 	if (m)
-		label->setText(QString(s)+" (muted)");
+		label->setText(s+" (muted)");
 	else
-		label->setText(QString(s));
+		label->setText(s);
 
+	value->setMaximum(100);
 	value->setValue(v);
 	stackedWidget->setCurrentIndex(0);
 	timer->start(2000);
@@ -39,12 +41,32 @@ void OSD::setValue(char* s, int v, bool m) {
 }
 
 void OSD::setText(QString s) {
-	stackedWidget->setCurrentIndex(1);
-	//label_2->setText(label_2->text().append(s));
-	label_2->setFont(QFont("Helvetica", 12));
-	label_2->setAlignment(Qt::AlignCenter);
-	//label_2->setText(s);
-	label_2->append("<div style='text-align:center'>"+s+"</div>");
+	QRegExp rx("(\\d+)/(\\d+) (.*)");
+	if (rx.exactMatch(s)) {
+		stackedWidget->setCurrentIndex(0);
+		QStringList l = rx.capturedTexts();
+
+		label->setText(l[3]);
+		value->setMaximum(l[2].toInt());
+		value->setValue(l[1].toInt());
+	}
+	else {
+		stackedWidget->setCurrentIndex(2);
+
+		label_3->setWordWrap(true);
+		label_3->setFixedWidth(600);
+		label_3->setFixedHeight(80);
+		label_3->setFont(QFont("Helvetica", 12));
+		label_3->setAlignment(Qt::AlignCenter);
+
+		if (text->count() >= 4) {
+			text->removeFirst();
+		}
+		(*text) << s; //->push_back(s);
+
+
+		label_3->setText(text->join(QString('\n')));
+	}
 
 	timer->start(2000);
 	show();
@@ -78,7 +100,7 @@ void OSD::resizeEvent(QResizeEvent *e) {
 	}
 }
 
-void OSD::hideEvent(QHideEvent *e) {
+void OSD::hideEvent(QHideEvent *) {
 	label_2->setText("");
+	text->clear();
 }
-

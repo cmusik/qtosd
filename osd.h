@@ -25,6 +25,7 @@
 #include <QPaintEvent>
 #include <QSvgRenderer>
 #include <QResizeEvent>
+#include <QStringList>
 
 
 class OSD : public QDialog, private Ui::OSD {
@@ -39,12 +40,13 @@ class OSD : public QDialog, private Ui::OSD {
 		virtual void hideEvent(QHideEvent *e);
 
 	public slots:
-		void setValue(char *, int, bool);
+		void setValue(QString, int, bool);
 		void setText(QString);
 
 	private:
 		QTimer *timer;
 
+		QStringList *text;
 		QSvgRenderer *renderer;
 		QPixmap       cache;
 		bool          dirty;

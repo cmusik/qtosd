@@ -69,7 +69,8 @@ int main (int argc, char *argv[]) {
 	MixerThread *t = new MixerThread();
 	Reader *r = new Reader();
 
-	QObject::connect(t, SIGNAL(valueChanged(char*, int, bool)), &osd, SLOT(setValue(char*, int, bool)));
+	//QObject::connect(t, SIGNAL(valueChanged(QString, int, bool)), &osd, SLOT(setValue(QString, int, bool)));
+	QObject::connect(t, SIGNAL(showText(QString)), &osd, SLOT(setText(QString)));
 	QObject::connect(r, SIGNAL(showText(QString)), &osd, SLOT(setText(QString)));
 
 

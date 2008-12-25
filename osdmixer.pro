@@ -11,6 +11,6 @@ QMAKE_LFLAGS += -lasound
 QT += svg network
 
 # Input
-HEADERS += osd.h mixer.h reader.h
+HEADERS += osd.h mixer.h reader.h readerserver.h
 FORMS += osd.ui
-SOURCES += main.cpp osd.cpp mixer.cpp reader.cpp
+SOURCES += main.cpp osd.cpp mixer.cpp reader.cpp readerserver.cpp

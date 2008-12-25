@@ -22,6 +22,7 @@
 #include <QApplication>
 
 #include "reader.h"
+#include "readerserver.h"
 #include "mixer.h"
 #include <X11/extensions/Xrender.h>
 
@@ -67,10 +68,9 @@ int main (int argc, char *argv[]) {
 
 	OSD osd;
 	MixerThread *t = new MixerThread();
-	Reader *r = new Reader();
+	new ReaderServer(&osd);
 
 	QObject::connect(t, SIGNAL(showText(QString)), &osd, SLOT(setText(QString)));
-	QObject::connect(r, SIGNAL(showText(QString)), &osd, SLOT(setText(QString)));
 
 	t->start();
 

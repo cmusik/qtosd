@@ -3,22 +3,24 @@
 #include <QSocketNotifier>
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QThread>
 
 #ifndef  READER_INC
 #define  READER_INC
 
-class Reader : public QObject {
+class Reader : public QThread {
 	Q_OBJECT
 
 	public:
-		Reader();
-	
+		Reader(int);
+		~Reader();
+
 	public slots:
-		void handleConnection();
 		void readSocket();
+		void closeConnection();
 
 	signals:
-		void showText(QString);
+		void receivedText(QString);
 
 	private:
 		QTcpServer *srv;

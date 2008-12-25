@@ -3,20 +3,33 @@
 #include "reader.h"
 
 
-Reader::Reader() : QObject() {
-	srv = new QTcpServer();
-	srv->listen(QHostAddress::LocalHost, 5000);
-	connect(srv, SIGNAL(newConnection()), this, SLOT(handleConnection()));
+Reader::Reader(int socket) : QThread() {
+	connection = new QTcpSocket(this);
+	connection->setSocketDescriptor(socket);
+	connect(connection, SIGNAL(readyRead()), this, SLOT(readSocket()));
+	connect(connection, SIGNAL(disconnected()), this, SLOT(closeConnection()));
 }
 
-void Reader::handleConnection() {
-	connection = srv->nextPendingConnection();
-	connect(connection, SIGNAL(readyRead()), this, SLOT(readSocket()));
+Reader::~Reader() {
+	delete connection;
 }
 
 void Reader::readSocket() {
 	QString str = QString::fromUtf8(connection->readAll());
+
 	foreach (QString s, str.split('\n')) {
-		emit showText(s);
+		s = s.simplified();
+		if (s == "quit") {
+			closeConnection();
+			break;
+		}
+		if (!s.isEmpty()) {
+			emit receivedText(s);
+		}
 	}
+}
+
+void Reader::closeConnection() {
+	connection->close();
+	terminate();
 }

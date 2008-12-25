@@ -38,7 +38,7 @@ OSD::OSD() : QDialog() {
 	label_1->setFixedWidth(WIDTH);
 	label_1->setFixedHeight(label_1->fontMetrics().height());
 	label_2->setFixedWidth(WIDTH);
-	label_2->setFixedHeight(80);
+	label_2->setFixedHeight(label_2->fontMetrics().height()*4);
 	label_2->setAlignment(Qt::AlignCenter);
 
 	QDesktopWidget w;

@@ -1,9 +1,8 @@
 #include "readerserver.h"
 #include "reader.h"
 
-ReaderServer::ReaderServer(OSD *g, QObject *parent) : QTcpServer(parent) {
+ReaderServer::ReaderServer(OSD *g, QObject *parent) : QTcpServer(parent), gui(g) {
 	listen(QHostAddress::LocalHost, 5000);
-	gui = g;
 }
 
 void ReaderServer::incomingConnection(int socket) {

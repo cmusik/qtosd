@@ -40,7 +40,7 @@ void OSD::setText(QString s) {
 	else {
 		stackedWidget->setCurrentWidget(page_2);
 
-		label_2->setWordWrap(true);
+		s = label_2->fontMetrics().elidedText(s, Qt::ElideMiddle, 600);
 		label_2->setFixedWidth(600);
 		label_2->setFixedHeight(80);
 		label_2->setFont(QFont("Helvetica", 12));

@@ -8,7 +8,7 @@
 #include <QPaintEvent>
 #include <QPen>
 #include <QBrush>
-#include <QCheckBox>
+#include <QRegExp>
 
 
 
@@ -20,19 +20,41 @@ OSD::OSD() : QDialog() {
 
 	renderer = new QSvgRenderer(QLatin1String("/home/christof/src/osd/background.svg"), this);
 	dirty = true;
-}
 
-void OSD::setValue(char* s, int v, bool m) {
-	if (m)
-		label->setText(QString(s)+" (muted)");
-	else
-		label->setText(QString(s));
-
-	value->setValue(v);
-	timer->start(2000);
 	QDesktopWidget w;
 	QRect r = w.screenGeometry(0);
 	move(r.x()+((r.width()-width())/2), r.y()+((r.height()-height())/2)+400);
+	text = new QStringList();
+}
+
+void OSD::setText(QString s) {
+	QRegExp rx("(\\d+)/(\\d+) (.*)");
+	if (rx.exactMatch(s)) {
+		stackedWidget->setCurrentWidget(page_1);
+		QStringList l = rx.capturedTexts();
+
+		label_1->setText(l[3]);
+		value_1->setMaximum(l[2].toInt());
+		value_1->setValue(l[1].toInt());
+	}
+	else {
+		stackedWidget->setCurrentWidget(page_2);
+
+		label_2->setWordWrap(true);
+		label_2->setFixedWidth(600);
+		label_2->setFixedHeight(80);
+		label_2->setFont(QFont("Helvetica", 12));
+		label_2->setAlignment(Qt::AlignCenter);
+
+		if (text->count() >= 4) {
+			text->removeFirst();
+		}
+		(*text) << s;
+
+		label_2->setText(text->join(QString('\n')));
+	}
+
+	timer->start(4000);
 	show();
 }
 
@@ -64,4 +86,7 @@ void OSD::resizeEvent(QResizeEvent *e) {
 	}
 }
 
-
+void OSD::hideEvent(QHideEvent *) {
+	label_2->setText("");
+	text->clear();
+}

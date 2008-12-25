@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QString>
 #include "mixer.h"
 
 MixerThread::MixerThread() {
@@ -16,8 +17,7 @@ MixerThread::~MixerThread() {
 	snd_mixer_close(alsa_mixer_handle);
 }
 
-void
-MixerThread::run() {
+void MixerThread::run() {
 	do {
 		snd_mixer_handle_events(alsa_mixer_handle);
 		Mixer *m = mixer;
@@ -30,8 +30,7 @@ MixerThread::run() {
 	} while (!snd_mixer_wait(alsa_mixer_handle, -1));
 }
 
-int
-MixerThread::alsa_mixer_open() {
+int MixerThread::alsa_mixer_open() {
 	snd_mixer_selem_id_t *sid;
 	snd_mixer_elem_t *elem;
 	int count;
@@ -93,8 +92,7 @@ MixerThread::alsa_mixer_open() {
 	return SUCCESS;
 }
 
-int
-MixerThread::alsa_mixer_get_volume(Mixer *m) {
+int MixerThread::alsa_mixer_get_volume(Mixer *m) {
 	long lv = 0, rv = 0;
 
 	int old_vol_left = 0;
@@ -156,8 +154,7 @@ MixerThread::alsa_mixer_get_volume(Mixer *m) {
 	return 0;
 }
 
-Mixer*
-MixerThread::get_new_mixer() {
+Mixer* MixerThread::get_new_mixer() {
 	Mixer *m = NULL;
 	if ((m = (Mixer*) malloc(sizeof(Mixer))) == NULL) {
 		fprintf(stderr, "Error: Couldn't alloc mixer\n");
@@ -178,8 +175,7 @@ MixerThread::get_new_mixer() {
 	return m;
 }
 
-void
-MixerThread::init_alsa() {
+void MixerThread::init_alsa() {
 	alsa_mixer_device = strdup("default");
 	mixer = get_new_mixer();
 
@@ -191,7 +187,10 @@ MixerThread::init_alsa() {
 	}
 }
 
-void
-MixerThread::display_osd(Mixer *m) {
-	emit valueChanged(m->name, m->vol_left, (m->has_switch && m->muted_left && m->muted_right));
+void MixerThread::display_osd(Mixer *m) {
+	QString name(m->name);
+	if (m->has_switch && m->muted_left && m->muted_right) {
+		name = name + " (muted)";
+	}
+	emit showText(QString("%1/%2 %3").arg(m->vol_left).arg("100").arg(name));
 }

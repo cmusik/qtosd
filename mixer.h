@@ -2,6 +2,7 @@
 #define  MIXER_INC
 
 #include <QThread>
+#include <QString>
 #include <alsa/asoundlib.h>
 
 typedef struct mixer Mixer;
@@ -47,7 +48,8 @@ class MixerThread : public QThread {
 		char *alsa_mixer_device;
 
 	signals:
-		void valueChanged(char *, int, bool);
+		//void valueChanged(QString, int, bool);
+		void showText(QString);
 };
 
 #endif   /* ----- #ifndef MIXER_INC  ----- */

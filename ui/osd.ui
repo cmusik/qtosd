@@ -5,7 +5,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>666</width>
+    <width>800</width>
     <height>130</height>
    </rect>
   </property>
@@ -80,7 +80,7 @@
    <item>
     <widget class="QStackedWidget" name="stackedWidget" >
      <property name="currentIndex" >
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="page_1" >
       <layout class="QVBoxLayout" name="verticalLayout_2" >
@@ -572,12 +572,6 @@
       <layout class="QHBoxLayout" name="horizontalLayout_2" >
        <item>
         <widget class="QLabel" name="label_2" >
-         <property name="sizePolicy" >
-          <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
          <property name="palette" >
           <palette>
            <active>
@@ -614,6 +608,11 @@
             </colorrole>
            </disabled>
           </palette>
+         </property>
+         <property name="font" >
+          <font>
+           <pointsize>14</pointsize>
+          </font>
          </property>
          <property name="text" >
           <string/>

@@ -24,6 +24,7 @@
 
 #include "osd.h"
 
+#define WIDTH 750
 
 OSD::OSD() : QDialog() {
 	timer = new QTimer(this);
@@ -34,9 +35,9 @@ OSD::OSD() : QDialog() {
 	renderer = new QSvgRenderer(QLatin1String("/home/christof/src/osd/background.svg"), this);
 	dirty = true;
 
-	label_1->setFixedWidth(600);
+	label_1->setFixedWidth(WIDTH);
 	label_1->setFixedHeight(label_1->fontMetrics().height());
-	label_2->setFixedWidth(600);
+	label_2->setFixedWidth(WIDTH);
 	label_2->setFixedHeight(80);
 	label_2->setAlignment(Qt::AlignCenter);
 
@@ -52,7 +53,7 @@ void OSD::setText(QString s) {
 		stackedWidget->setCurrentWidget(page_1);
 		QStringList l = rx.capturedTexts();
 
-		l[3] = label_1->fontMetrics().elidedText(l[3], Qt::ElideMiddle, 600);
+		l[3] = label_1->fontMetrics().elidedText(l[3], Qt::ElideMiddle, WIDTH);
 
 		label_1->setText(l[3]);
 		value_1->setMaximum(l[2].toInt());
@@ -61,7 +62,7 @@ void OSD::setText(QString s) {
 	else {
 		stackedWidget->setCurrentWidget(page_2);
 
-		s = label_2->fontMetrics().elidedText(s, Qt::ElideMiddle, 600);
+		s = label_2->fontMetrics().elidedText(s, Qt::ElideMiddle, WIDTH);
 
 		if (text->count() >= 4) {
 			text->removeFirst();

@@ -28,7 +28,13 @@
 
 OSD::OSD() : QDialog() {
 	timer = new QTimer(this);
-	connect(timer, SIGNAL(timeout()), this, SLOT(hide()));
+	fadeTimer = new QTimer(this);
+	timer->setSingleShot(true);
+	fadeTimer->setSingleShot(true);
+
+	connect(timer, SIGNAL(timeout()), this, SLOT(fadeOut()));
+	connect(fadeTimer, SIGNAL(timeout()), this, SLOT(fadeOut()));
+
 	setupUi(this);
 	setWindowFlags(Qt::ToolTip|Qt::WindowStaysOnTopHint);
 
@@ -76,6 +82,7 @@ void OSD::setText(QString s) {
 	}
 
 	timer->start(4000);
+	setWindowOpacity(1);
 	show();
 }
 
@@ -157,4 +164,16 @@ void OSD::resizeEvent(QResizeEvent *e) {
 
 void OSD::hideEvent(QHideEvent *) {
 	text->clear();
+}
+
+void OSD::fadeOut() {
+	qreal w;
+	if ((w = windowOpacity()) > 0.1) {
+		fadeTimer->start(25);
+		setWindowOpacity(w - 0.1);
+	}
+	else {
+		setWindowOpacity(1);
+		hide();
+	}
 }

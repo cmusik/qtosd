@@ -43,13 +43,15 @@ class OSD : public QDialog, private Ui::OSD {
 	public slots:
 		void setText(QString);
 		void fadeOut();
+		void fadeIn();
 
 	private:
 		void fitText(QLabel*, QString*, int);
 		void fitText(QLabel*, QStringList*);
 
 		QTimer *timer;
-		QTimer *fadeTimer;
+		QTimer *fadeOutTimer;
+		QTimer *fadeInTimer;
 		QStringList *text;
 		QSvgRenderer *renderer;
 		QPixmap cache;

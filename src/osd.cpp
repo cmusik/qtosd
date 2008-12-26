@@ -28,12 +28,15 @@
 
 OSD::OSD() : QDialog() {
 	timer = new QTimer(this);
-	fadeTimer = new QTimer(this);
+	fadeOutTimer = new QTimer(this);
+	fadeInTimer = new QTimer(this);
 	timer->setSingleShot(true);
-	fadeTimer->setSingleShot(true);
+	fadeOutTimer->setSingleShot(true);
+	fadeInTimer->setSingleShot(true);
 
 	connect(timer, SIGNAL(timeout()), this, SLOT(fadeOut()));
-	connect(fadeTimer, SIGNAL(timeout()), this, SLOT(fadeOut()));
+	connect(fadeOutTimer, SIGNAL(timeout()), this, SLOT(fadeOut()));
+	connect(fadeInTimer, SIGNAL(timeout()), this, SLOT(fadeIn()));
 
 	setupUi(this);
 	setWindowFlags(Qt::ToolTip|Qt::WindowStaysOnTopHint);
@@ -82,8 +85,9 @@ void OSD::setText(QString s) {
 	}
 
 	timer->start(4000);
-	setWindowOpacity(1);
-	show();
+	if (isHidden() || fadeOutTimer->isActive()) {
+		fadeIn();
+	}
 }
 
 void OSD::fitText(QLabel *l, QString *str, int lines=1) {
@@ -105,7 +109,7 @@ void OSD::fitText(QLabel *l, QString *str, int lines=1) {
 	l->setFont(optimal);
 
 	if (optimal.pointSize() == MINFONTSIZE && lines == 1) {
-		*str = l->fontMetrics().elidedText(*str, Qt::ElideMiddle, l->width());
+		*str = l->fontMetrics().elidedText(*str, Qt::ElideMiddle, l->minimumWidth());
 	}
 }
 
@@ -129,7 +133,7 @@ void OSD::fitText(QLabel *l, QStringList *list) {
 		list->clear();
 
 		foreach (QString s, list_new) {
-			(*list) << l->fontMetrics().elidedText(s, Qt::ElideMiddle, l->width());
+			(*list) << l->fontMetrics().elidedText(s, Qt::ElideMiddle, l->minimumWidth());
 		}
 	}
 }
@@ -168,12 +172,25 @@ void OSD::hideEvent(QHideEvent *) {
 
 void OSD::fadeOut() {
 	qreal w;
+	fadeInTimer->stop();
 	if ((w = windowOpacity()) > 0.1) {
-		fadeTimer->start(25);
+		fadeOutTimer->start(25);
 		setWindowOpacity(w - 0.1);
 	}
 	else {
-		setWindowOpacity(1);
 		hide();
+	}
+}
+
+void OSD::fadeIn() {
+	qreal w;
+	show();
+	fadeOutTimer->stop();
+	if ((w = windowOpacity()) <= 0.9) {
+		fadeInTimer->start(25);
+		setWindowOpacity(w + 0.1);
+	}
+	else {
+		setWindowOpacity(1);
 	}
 }

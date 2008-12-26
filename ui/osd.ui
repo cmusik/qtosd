@@ -5,9 +5,27 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>801</width>
-    <height>136</height>
+    <width>800</width>
+    <height>130</height>
    </rect>
+  </property>
+  <property name="sizePolicy" >
+   <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize" >
+   <size>
+    <width>800</width>
+    <height>130</height>
+   </size>
+  </property>
+  <property name="maximumSize" >
+   <size>
+    <width>800</width>
+    <height>130</height>
+   </size>
   </property>
   <property name="palette" >
    <palette>
@@ -82,11 +100,32 @@
    </property>
    <item>
     <widget class="QStackedWidget" name="stackedWidget" >
+     <property name="sizePolicy" >
+      <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize" >
+      <size>
+       <width>770</width>
+       <height>100</height>
+      </size>
+     </property>
+     <property name="maximumSize" >
+      <size>
+       <width>770</width>
+       <height>100</height>
+      </size>
+     </property>
      <property name="currentIndex" >
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="page_1" >
       <layout class="QVBoxLayout" name="verticalLayout_2" >
+       <property name="sizeConstraint" >
+        <enum>QLayout::SetFixedSize</enum>
+       </property>
        <property name="margin" >
         <number>0</number>
        </property>

@@ -44,12 +44,13 @@ class OSD : public QDialog, private Ui::OSD {
 		void setText(QString);
 
 	private:
-		QTimer *timer;
+		void fitText(QLabel*, QString*);
 
+		QTimer *timer;
 		QStringList *text;
 		QSvgRenderer *renderer;
-		QPixmap       cache;
-		bool          dirty;
+		QPixmap cache;
+		bool dirty;
 
 };
 

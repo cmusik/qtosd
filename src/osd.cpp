@@ -25,6 +25,8 @@
 #include "osd.h"
 
 #define WIDTH 750
+#define HEIGHT 65
+#define MINFONTSIZE 12
 
 OSD::OSD() : QDialog() {
 	timer = new QTimer(this);
@@ -36,7 +38,7 @@ OSD::OSD() : QDialog() {
 	dirty = true;
 
 	label_1->setFixedWidth(WIDTH);
-	label_1->setFixedHeight(label_1->fontMetrics().height());
+	label_1->setFixedHeight(HEIGHT);
 	label_2->setFixedWidth(WIDTH);
 	label_2->setFixedHeight(label_2->fontMetrics().height()*4);
 	label_2->setAlignment(Qt::AlignCenter);
@@ -48,12 +50,12 @@ OSD::OSD() : QDialog() {
 }
 
 void OSD::setText(QString s) {
-	QRegExp rx("^(\\d+)/(\\d+) (.*)");
+	QRegExp("^(\\d+)/(\\d+) (.*)");
 	if (rx.exactMatch(s)) {
 		stackedWidget->setCurrentWidget(page_1);
 		QStringList l = rx.capturedTexts();
 
-		l[3] = label_1->fontMetrics().elidedText(l[3], Qt::ElideMiddle, WIDTH);
+		fitText(label_1, &l[3]);
 
 		label_1->setText(l[3]);
 		value_1->setMaximum(l[2].toInt());
@@ -74,6 +76,28 @@ void OSD::setText(QString s) {
 
 	timer->start(4000);
 	show();
+}
+
+void OSD::fitText(QLabel *l, QString *str) {
+	int w = 0;
+	int h = 0;
+	int s = MINFONTSIZE;
+	QFont optimal = l->font();
+	optimal.setPointSize(s);
+	QFont f = optimal;
+
+	while (w < WIDTH && h < HEIGHT) {
+		optimal = f;
+		f.setPointSize(++s);
+		l->setFont(f);
+		w = l->fontMetrics().width(*str);
+		h = l->fontMetrics().height();
+	}
+	l->setFont(optimal);
+
+	if (optimal.pointSize() == MINFONTSIZE) {
+		*str = l->fontMetrics().elidedText(*str, Qt::ElideMiddle, WIDTH);
+	}
 }
 
 void OSD::paintEvent(QPaintEvent *e) {

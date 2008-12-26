@@ -125,10 +125,13 @@
          </property>
          <property name="font" >
           <font>
-           <family>Bitstream Vera Sans</family>
+           <family>DejaVu Sans</family>
            <pointsize>22</pointsize>
            <kerning>true</kerning>
           </font>
+         </property>
+         <property name="lineWidth" >
+          <number>0</number>
          </property>
          <property name="text" >
           <string>TextLabel</string>
@@ -611,6 +614,7 @@
          </property>
          <property name="font" >
           <font>
+           <family>DejaVu Sans</family>
            <pointsize>14</pointsize>
           </font>
          </property>

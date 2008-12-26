@@ -24,8 +24,6 @@
 
 #include "osd.h"
 
-#define WIDTH 750
-#define HEIGHT 65
 #define MINFONTSIZE 12
 
 OSD::OSD() : QDialog() {
@@ -37,16 +35,12 @@ OSD::OSD() : QDialog() {
 	renderer = new QSvgRenderer(QLatin1String("/home/christof/src/osd/background.svg"), this);
 	dirty = true;
 
-	label_1->setFixedWidth(WIDTH);
-	label_1->setFixedHeight(HEIGHT);
-	label_2->setFixedWidth(WIDTH);
-	label_2->setFixedHeight(label_2->fontMetrics().height()*4);
-	label_2->setAlignment(Qt::AlignCenter);
-
 	QDesktopWidget w;
 	QRect r = w.screenGeometry(0);
 	move(r.x()+((r.width()-width())/2), r.y()+((r.height()-height())/2)+400);
 	text = new QStringList();
+
+	label_2->setAlignment(Qt::AlignCenter);
 }
 
 void OSD::setText(QString s) {
@@ -71,7 +65,7 @@ void OSD::setText(QString s) {
 			s = s.remove(0, 2);
 		}
 
-		s = label_2->fontMetrics().elidedText(s, Qt::ElideMiddle, WIDTH);
+		s = label_2->fontMetrics().elidedText(s, Qt::ElideMiddle, label_2->width());
 
 		if (text->count() >= 4) {
 			text->removeFirst();
@@ -95,7 +89,7 @@ void OSD::fitText(QLabel *l, QString *str) {
 	optimal.setPointSize(s);
 	QFont f = optimal;
 
-	while (w < WIDTH && h < HEIGHT) {
+	while (w < l->width() && h < l->height()) {
 		optimal = f;
 		f.setPointSize(++s);
 		l->setFont(f);
@@ -105,7 +99,7 @@ void OSD::fitText(QLabel *l, QString *str) {
 	l->setFont(optimal);
 
 	if (optimal.pointSize() == MINFONTSIZE) {
-		*str = l->fontMetrics().elidedText(*str, Qt::ElideMiddle, WIDTH);
+		*str = l->fontMetrics().elidedText(*str, Qt::ElideMiddle, l->width());
 	}
 }
 

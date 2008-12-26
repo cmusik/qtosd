@@ -39,8 +39,6 @@ OSD::OSD() : QDialog() {
 	QRect r = w.screenGeometry(0);
 	move(r.x()+((r.width()-width())/2), r.y()+((r.height()-height())/2)+400);
 	text = new QStringList();
-
-	label_2->setAlignment(Qt::AlignCenter);
 }
 
 void OSD::setText(QString s) {
@@ -49,7 +47,7 @@ void OSD::setText(QString s) {
 		stackedWidget->setCurrentWidget(page_1);
 		QStringList l = rx.capturedTexts();
 
-		fitText(label_1, &l[3]);
+		fitText(label_1, &l[3], 1);
 
 		label_1->setText(l[3]);
 		value_1->setMaximum(l[2].toInt());
@@ -65,12 +63,12 @@ void OSD::setText(QString s) {
 			s = s.remove(0, 2);
 		}
 
-		s = label_2->fontMetrics().elidedText(s, Qt::ElideMiddle, label_2->width());
-
 		if (text->count() >= 4) {
 			text->removeFirst();
 		}
 		(*text) << s;
+
+		fitText(label_2, text);
 
 		label_2->setText(text->join(QString('\n')));
 		if (clear)
@@ -81,15 +79,16 @@ void OSD::setText(QString s) {
 	show();
 }
 
-void OSD::fitText(QLabel *l, QString *str) {
+void OSD::fitText(QLabel *l, QString *str, int lines=1) {
 	int w = 0;
 	int h = 0;
 	int s = MINFONTSIZE;
+
 	QFont optimal = l->font();
 	optimal.setPointSize(s);
 	QFont f = optimal;
 
-	while (w < l->width() && h < l->height()) {
+	while (w < l->minimumWidth() && h * lines < l->minimumHeight()) {
 		optimal = f;
 		f.setPointSize(++s);
 		l->setFont(f);
@@ -98,8 +97,33 @@ void OSD::fitText(QLabel *l, QString *str) {
 	}
 	l->setFont(optimal);
 
-	if (optimal.pointSize() == MINFONTSIZE) {
+	if (optimal.pointSize() == MINFONTSIZE && lines == 1) {
 		*str = l->fontMetrics().elidedText(*str, Qt::ElideMiddle, l->width());
+	}
+}
+
+void OSD::fitText(QLabel *l, QStringList *list) {
+	int max = 0;
+	int maxline = 0;
+	int cur = 0;
+	int line = 0;
+	foreach (QString s, *list) {
+		if ((cur = l->fontMetrics().width(s)) > max) {
+			max = cur;
+			maxline = line;
+		}
+		line++;
+	}
+
+	fitText(l, &(*list)[maxline], list->count());
+
+	if (l->font().pointSize() == MINFONTSIZE) {
+		QStringList list_new = QStringList(*list);
+		list->clear();
+
+		foreach (QString s, list_new) {
+			(*list) << l->fontMetrics().elidedText(s, Qt::ElideMiddle, l->width());
+		}
 	}
 }
 

@@ -83,7 +83,7 @@
    <item>
     <widget class="QStackedWidget" name="stackedWidget" >
      <property name="currentIndex" >
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="page_1" >
       <layout class="QVBoxLayout" name="verticalLayout_2" >
@@ -668,6 +668,9 @@
          </property>
          <property name="scaledContents" >
           <bool>false</bool>
+         </property>
+         <property name="alignment" >
+          <set>Qt::AlignCenter</set>
          </property>
         </widget>
        </item>

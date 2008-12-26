@@ -44,7 +44,8 @@ class OSD : public QDialog, private Ui::OSD {
 		void setText(QString);
 
 	private:
-		void fitText(QLabel*, QString*);
+		void fitText(QLabel*, QString*, int);
+		void fitText(QLabel*, QStringList*);
 
 		QTimer *timer;
 		QStringList *text;

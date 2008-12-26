@@ -42,12 +42,19 @@ OSD::OSD() : QDialog() {
 	setWindowFlags(Qt::ToolTip|Qt::WindowStaysOnTopHint);
 
 	renderer = new QSvgRenderer(QLatin1String("/home/christof/src/osd/background.svg"), this);
-	dirty = true;
+
+	cache = QPixmap(size());
+	cache.fill(Qt::transparent);
+	QPainter p1(&cache);
+	p1.setRenderHint(QPainter::Antialiasing);
+	renderer->render(&p1);
+	p1.end();
 
 	QDesktopWidget w;
 	QRect r = w.screenGeometry(0);
 	move(r.x()+((r.width()-width())/2), r.y()+((r.height()-height())/2)+400);
 	text = new QStringList();
+	setWindowOpacity(0.1);
 }
 
 void OSD::setText(QString s) {
@@ -148,22 +155,7 @@ void OSD::paintEvent(QPaintEvent *e) {
 	p.fillRect(rect(), Qt::transparent);
 	p.restore();
 
-	if (dirty) {
-		cache.fill(Qt::transparent);
-		QPainter p1(&cache);
-		p1.setRenderHint(QPainter::Antialiasing);
-		renderer->render(&p1);
-		p1.end();
-		dirty = false;
-	}
 	p.drawPixmap(0, 0, cache);
-}
-
-void OSD::resizeEvent(QResizeEvent *e) {
-	if (e->size() != cache.size()) {
-		cache = QPixmap(e->size());
-		dirty = true;
-	}
 }
 
 void OSD::hideEvent(QHideEvent *) {

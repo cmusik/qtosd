@@ -37,7 +37,6 @@ class OSD : public QDialog, private Ui::OSD {
 
 	protected:
 		virtual void paintEvent(QPaintEvent *e);
-		virtual void resizeEvent(QResizeEvent *e);
 		virtual void hideEvent(QHideEvent *e);
 
 	public slots:
@@ -55,7 +54,6 @@ class OSD : public QDialog, private Ui::OSD {
 		QStringList *text;
 		QSvgRenderer *renderer;
 		QPixmap cache;
-		bool dirty;
 
 };
 

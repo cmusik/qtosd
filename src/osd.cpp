@@ -50,7 +50,7 @@ OSD::OSD() : QDialog() {
 }
 
 void OSD::setText(QString s) {
-	QRegExp("^(\\d+)/(\\d+) (.*)");
+	QRegExp rx("^(\\d+)/(\\d+) (.*)");
 	if (rx.exactMatch(s)) {
 		stackedWidget->setCurrentWidget(page_1);
 		QStringList l = rx.capturedTexts();

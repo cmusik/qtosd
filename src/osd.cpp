@@ -64,6 +64,13 @@ void OSD::setText(QString s) {
 	else {
 		stackedWidget->setCurrentWidget(page_2);
 
+		bool clear = false;
+		if (s.startsWith("c/")) {
+			clear = true;
+			text->clear();
+			s = s.remove(0, 2);
+		}
+
 		s = label_2->fontMetrics().elidedText(s, Qt::ElideMiddle, WIDTH);
 
 		if (text->count() >= 4) {
@@ -72,6 +79,8 @@ void OSD::setText(QString s) {
 		(*text) << s;
 
 		label_2->setText(text->join(QString('\n')));
+		if (clear)
+			text->clear();
 	}
 
 	timer->start(4000);

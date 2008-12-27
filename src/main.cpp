@@ -19,14 +19,15 @@
 */
 
 #include <QApplication>
+#include <QDBusConnection>
 #include <unistd.h>
 
 #include "osd.h"
+#include "dbus.h"
 #include "readerserver.h"
 #include "mixer.h"
 
 #include <X11/extensions/Xrender.h>
-
 
 int main (int argc, char *argv[]) {
 	bool  argbVisual=false;
@@ -70,6 +71,11 @@ int main (int argc, char *argv[]) {
 	OSD osd;
 	MixerThread *t = new MixerThread();
 	ReaderServer *s = new ReaderServer(&osd);
+
+	new DBusAdaptor(&app, &osd);
+	QDBusConnection dbuscon = QDBusConnection::connectToBus(QDBusConnection::SessionBus, "osdmixer");
+	dbuscon.registerService("de.senfdax.osd");
+	dbuscon.registerObject("/OSD", &app);
 
 	if (!s->listen(QHostAddress::LocalHost, 5000)) {
 		qCritical("Couldn't bind on port 5000!");

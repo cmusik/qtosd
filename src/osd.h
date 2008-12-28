@@ -30,7 +30,7 @@ class OSD : public QDialog, private Ui::OSD {
 	Q_OBJECT
 
 	public:
-		OSD();
+		OSD(QString, float);
 
 	protected:
 		virtual void paintEvent(QPaintEvent *e);
@@ -51,6 +51,7 @@ class OSD : public QDialog, private Ui::OSD {
 		QStringList *text;
 		QSvgRenderer *renderer;
 		QPixmap cache;
+		float timeout;
 
 };
 

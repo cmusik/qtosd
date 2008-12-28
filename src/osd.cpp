@@ -19,12 +19,13 @@
 #include <QDebug>
 #include <QPainter>
 #include <QRegExp>
+#include <QFileInfo>
 
 #include "osd.h"
 
 #define MINFONTSIZE 12
 
-OSD::OSD() : QDialog() {
+OSD::OSD(QString bg, float t) : QDialog(), timeout(t) {
 	timer = new QTimer(this);
 	fadeOutTimer = new QTimer(this);
 	fadeInTimer = new QTimer(this);
@@ -39,7 +40,10 @@ OSD::OSD() : QDialog() {
 	setupUi(this);
 	setWindowFlags(Qt::ToolTip|Qt::WindowStaysOnTopHint);
 
-	renderer = new QSvgRenderer(QLatin1String("/home/christof/src/osd/background.svg"), this);
+	if (QFileInfo(bg).exists())
+		renderer = new QSvgRenderer(bg, this);
+	else
+		renderer = new QSvgRenderer(QString::fromUtf8(":/background/background.svg"), this);
 
 	cache = QPixmap(size());
 	cache.fill(Qt::transparent);
@@ -89,7 +93,7 @@ void OSD::setText(QString s) {
 			text->clear();
 	}
 
-	timer->start(4000);
+	timer->start(int (timeout*1000));
 	if (isHidden() || fadeOutTimer->isActive()) {
 		fadeIn();
 	}

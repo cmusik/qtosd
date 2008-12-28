@@ -17,6 +17,7 @@
 */
 #include <QApplication>
 #include <QDBusConnection>
+#include <iostream>
 #include <unistd.h>
 
 #include "osd.h"
@@ -25,6 +26,11 @@
 #include "mixer.h"
 
 #include <X11/extensions/Xrender.h>
+
+void usage() {
+	std::cout << "Usage: $0 [ -p port | -n | -b background.svg ]" << std::endl;
+	exit(0);
+}
 
 int main (int argc, char *argv[]) {
 	bool  argbVisual=false;
@@ -65,7 +71,27 @@ int main (int argc, char *argv[]) {
 	QApplication app(dpy, argc, argv,
 			Qt::HANDLE(visual), Qt::HANDLE(colormap));
 
-	OSD osd;
+	QStringList args = app.arguments();
+
+	bool daemonize = true;
+	QString background;
+	int port = 5000;
+	float timeout = 4;
+
+	for (int i = 1; i < args.count(); ++i) {
+		if (args[i] == "-n")
+			daemonize = false;
+		if (args[i] == "-b")
+			background = args[i+1];
+		if (args[i] == "-p")
+			port = args[i+1].toInt();
+		if (args[i] == "-t")
+			timeout = args[i+1].toFloat();
+		if (args[i] == "-h")
+			usage();
+	}
+
+	OSD osd(background, timeout);
 	MixerThread *t = new MixerThread();
 	ReaderServer *s = new ReaderServer(&osd);
 
@@ -74,14 +100,14 @@ int main (int argc, char *argv[]) {
 	dbuscon.registerService("de.senfdax.osd");
 	dbuscon.registerObject("/OSD", &app);
 
-	if (!s->listen(QHostAddress::LocalHost, 5000)) {
-		qCritical("Couldn't bind on port 5000!");
+	if (!s->listen(QHostAddress::LocalHost, port)) {
+		qCritical("Couldn't bind on port %d!", port);
 		return 255;
 	}
 
 	QObject::connect(t, SIGNAL(showText(QString)), &osd, SLOT(setText(QString)));
 
-	if (!app.arguments().contains("-n"))
+	if (daemonize)
 		daemon(1, 1);
 
 	t->start();

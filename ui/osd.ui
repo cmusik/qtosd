@@ -719,6 +719,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../osdmixer.qrc" />
+ </resources>
  <connections/>
 </ui>

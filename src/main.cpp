@@ -96,9 +96,9 @@ int main (int argc, char *argv[]) {
 	ReaderServer *s = new ReaderServer(&osd);
 
 	new DBusAdaptor(&app, &osd);
-	QDBusConnection dbuscon = QDBusConnection::connectToBus(QDBusConnection::SessionBus, "osdmixer");
-	dbuscon.registerService("de.senfdax.osd");
-	dbuscon.registerObject("/OSD", &app);
+	QDBusConnection dbuscon = QDBusConnection::connectToBus(QDBusConnection::SessionBus, "qtosd");
+	dbuscon.registerService("de.senfdax.qtosd");
+	dbuscon.registerObject("/osd", &app);
 
 	if (!s->listen(QHostAddress::LocalHost, port)) {
 		qCritical("Couldn't bind on port %d!", port);

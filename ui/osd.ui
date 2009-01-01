@@ -92,7 +92,7 @@
    </palette>
   </property>
   <property name="windowTitle" >
-   <string>OSDMixer</string>
+   <string>qtosd</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" >
    <property name="margin" >
@@ -720,7 +720,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../osdmixer.qrc" />
+  <include location="../qtosd.qrc" />
  </resources>
  <connections/>
 </ui>

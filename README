@@ -1,0 +1,45 @@
+Description
+-----------
+This is a small programm to display some information you need to be notified
+about. It also monitors you volume and shows it. You can use DBus or a TCP
+connection to show text.
+
+Requirements
+------------
+You need the following packages to be installed.
+- Qt >=4.4 (http://www.trolltech.com)
+- ALSA (http://www.alsa-project.org/)
+
+Install
+-------
+Just do a "make" and copy the binary "qtosd" somewhere to your path.
+
+Configuration & usage
+---------------------
+There are some parameters you can use:
+
+ -n 			Don't start in daemon mode
+ -p port 		Port for TCP server
+ -b background.svg 	Imagefile for background
+ -h 			Show a brief help
+
+The text you send can also have a special format:
+
+some text
+  -> shows just "some text"
+
+c/some text
+  -> clears the display before showing this text. (usefull for toggling options)
+
+10/100 some text
+  -> shows a progress bar and use 10 as value, 100 as max and "some text".
+
+Background
+----------
+For the background you have to use a SVG file. Just create it with a size ratio
+of 800:150. To use translucency you need a compositing window manager or you
+have to use xcompmgr.
+
+Have fun ;)
+
+Christof Musik <christof@senfdax.de>

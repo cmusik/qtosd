@@ -93,16 +93,19 @@ int main (int argc, char *argv[]) {
 
 	OSD osd(background, timeout);
 	MixerThread *t = new MixerThread();
-	ReaderServer *s = new ReaderServer(&osd);
 
 	new DBusAdaptor(&app, &osd);
 	QDBusConnection dbuscon = QDBusConnection::connectToBus(QDBusConnection::SessionBus, "qtosd");
 	dbuscon.registerService("de.senfdax.qtosd");
 	dbuscon.registerObject("/osd", &app);
 
-	if (!s->listen(QHostAddress::LocalHost, port)) {
-		qCritical("Couldn't bind on port %d!", port);
-		return 255;
+	if (port > 0) {
+		ReaderServer *s = new ReaderServer(&osd);
+
+		if (!s->listen(QHostAddress::LocalHost, port)) {
+			qCritical("Couldn't bind on port %d!", port);
+			return 255;
+		}
 	}
 
 	QObject::connect(t, SIGNAL(showText(QString)), &osd, SLOT(setText(QString)));

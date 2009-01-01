@@ -19,7 +19,7 @@ Configuration & usage
 There are some parameters you can use:
 
  -n 			Don't start in daemon mode
- -p port 		Port for TCP server
+ -p port 		Port for TCP server (p == 0 disables TCP server)
  -b background.svg 	Imagefile for background
  -h 			Show a brief help
 

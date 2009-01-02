@@ -2,7 +2,7 @@ Description
 -----------
 This is a small programm to display some information you need to be notified
 about. It also monitors you volume and shows it. You can use DBus or a TCP
-connection to show text.
+connection to show text or a progress bar.
 
 Requirements
 ------------
@@ -12,7 +12,7 @@ You need the following packages to be installed.
 
 Install
 -------
-Just do a "make" and copy the binary "qtosd" somewhere to your path.
+Just do a "qmake && make" and copy the binary "qtosd" somewhere to your path.
 
 Configuration & usage
 ---------------------
@@ -34,11 +34,13 @@ c/some text
 10/100 some text
   -> shows a progress bar and use 10 as value, 100 as max and "some text".
 
+Have also a look at the examples.
+
 Background
 ----------
 For the background you have to use a SVG file. Just create it with a size ratio
-of 800:150. To use translucency you need a compositing window manager or you
-have to use xcompmgr.
+of 800:150 (pixels). To use translucency you need a compositing window manager
+or you have to use xcompmgr.
 
 Have fun ;)
 

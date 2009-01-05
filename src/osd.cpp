@@ -20,6 +20,8 @@
 #include <QPainter>
 #include <QRegExp>
 #include <QFileInfo>
+#include <QBitmap>
+#include <QX11Info>
 
 #include "osd.h"
 
@@ -53,6 +55,10 @@ OSD::OSD(QString bg, float t, int w, int h) : QDialog(), timeout(t) {
 	p1.setRenderHint(QPainter::Antialiasing);
 	renderer->render(&p1);
 	p1.end();
+
+	if (!QX11Info::isCompositingManagerRunning()) {
+		setMask(cache.createHeuristicMask());
+	}
 
 	QDesktopWidget desktop;
 	QRect r = desktop.screenGeometry(0);

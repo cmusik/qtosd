@@ -160,6 +160,10 @@ void OSD::paintEvent(QPaintEvent *e) {
 	p.drawPixmap(0, 0, cache);
 }
 
+void OSD::mouseReleaseEvent(QMouseEvent *) {
+	fadeOut();
+}
+
 void OSD::hideEvent(QHideEvent *) {
 	text->clear();
 }

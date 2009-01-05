@@ -33,8 +33,9 @@ class OSD : public QDialog, private Ui::OSD {
 		OSD(QString, float);
 
 	protected:
-		virtual void paintEvent(QPaintEvent *e);
-		virtual void hideEvent(QHideEvent *e);
+		virtual void paintEvent(QPaintEvent*);
+		virtual void hideEvent(QHideEvent*);
+		virtual void mouseReleaseEvent(QMouseEvent*);
 
 	public slots:
 		void setText(QString);

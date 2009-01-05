@@ -99,7 +99,7 @@ int main (int argc, char *argv[]) {
 			continue;
 		}
 		if (args[i] == "-b" || args[i] == "--background") {
-			background = args[i+1];
+			background = args[++i];
 			continue;
 		}
 		if (args[i] == "-p" || args[i] == "--port") {

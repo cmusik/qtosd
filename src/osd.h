@@ -30,7 +30,7 @@ class OSD : public QDialog, private Ui::OSD {
 	Q_OBJECT
 
 	public:
-		OSD(QString, float);
+		OSD(QString, float, int, int);
 
 	protected:
 		virtual void paintEvent(QPaintEvent*);

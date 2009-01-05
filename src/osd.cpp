@@ -25,7 +25,7 @@
 
 #define MINFONTSIZE 12
 
-OSD::OSD(QString bg, float t) : QDialog(), timeout(t) {
+OSD::OSD(QString bg, float t, int w, int h) : QDialog(), timeout(t) {
 	timer = new QTimer(this);
 	fadeOutTimer = new QTimer(this);
 	fadeInTimer = new QTimer(this);
@@ -45,6 +45,8 @@ OSD::OSD(QString bg, float t) : QDialog(), timeout(t) {
 	else
 		renderer = new QSvgRenderer(QString::fromUtf8(":/background/background.svg"), this);
 
+	setFixedSize(w, h);
+
 	cache = QPixmap(size());
 	cache.fill(Qt::transparent);
 	QPainter p1(&cache);
@@ -52,15 +54,21 @@ OSD::OSD(QString bg, float t) : QDialog(), timeout(t) {
 	renderer->render(&p1);
 	p1.end();
 
-	QDesktopWidget w;
-	QRect r = w.screenGeometry(0);
+	QDesktopWidget desktop;
+	QRect r = desktop.screenGeometry(0);
 	move(r.x()+((r.width()-width())/2), r.y()+((r.height()-height())/2)+400);
 	text = new QStringList();
 	setWindowOpacity(0.1);
 }
 
 void OSD::setText(QString s) {
+	timer->start(int (timeout*1000));
+	if (isHidden() || fadeOutTimer->isActive()) {
+		fadeIn();
+	}
+
 	QRegExp rx("^(\\d+)/(\\d+) (.*)");
+
 	if (rx.exactMatch(s)) {
 		stackedWidget->setCurrentWidget(page_1);
 		QStringList l = rx.capturedTexts();
@@ -93,10 +101,6 @@ void OSD::setText(QString s) {
 			text->clear();
 	}
 
-	timer->start(int (timeout*1000));
-	if (isHidden() || fadeOutTimer->isActive()) {
-		fadeIn();
-	}
 }
 
 void OSD::fitText(QLabel *l, QString *str, int lines=1) {
@@ -108,7 +112,7 @@ void OSD::fitText(QLabel *l, QString *str, int lines=1) {
 	optimal.setPointSize(s);
 	QFont f = optimal;
 
-	while (w < l->minimumWidth() && h * lines < l->minimumHeight()) {
+	while (w < l->width() && h * lines < l->height()) {
 		optimal = f;
 		f.setPointSize(++s);
 		l->setFont(f);
@@ -118,7 +122,7 @@ void OSD::fitText(QLabel *l, QString *str, int lines=1) {
 	l->setFont(optimal);
 
 	if (optimal.pointSize() == MINFONTSIZE && lines == 1) {
-		*str = l->fontMetrics().elidedText(*str, Qt::ElideMiddle, l->minimumWidth());
+		*str = l->fontMetrics().elidedText(*str, Qt::ElideMiddle, l->width());
 	}
 }
 
@@ -142,7 +146,7 @@ void OSD::fitText(QLabel *l, QStringList *list) {
 		list->clear();
 
 		foreach (QString s, list_new) {
-			(*list) << l->fontMetrics().elidedText(s, Qt::ElideMiddle, l->minimumWidth());
+			(*list) << l->fontMetrics().elidedText(s, Qt::ElideMiddle, l->width());
 		}
 	}
 }

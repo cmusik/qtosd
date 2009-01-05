@@ -77,6 +77,8 @@ int main (int argc, char *argv[]) {
 	QString background;
 	int port = 5000;
 	float timeout = 4;
+	int width = 800;
+	int height = 130;
 
 	for (int i = 1; i < args.count(); ++i) {
 		if (args[i] == "-n")
@@ -87,11 +89,15 @@ int main (int argc, char *argv[]) {
 			port = args[i+1].toInt();
 		if (args[i] == "-t")
 			timeout = args[i+1].toFloat();
+		if (args[i] == "-w")
+			width = args[i+1].toInt();
 		if (args[i] == "-h")
+			height = args[i+1].toInt();
+		if (args[i] == "-help")
 			usage();
 	}
 
-	OSD osd(background, timeout);
+	OSD osd(background, timeout, width, height);
 	MixerThread *t = new MixerThread();
 
 	new DBusAdaptor(&app, &osd);

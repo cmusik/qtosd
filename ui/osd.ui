@@ -95,60 +95,18 @@
    <string>qtosd</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" >
-   <property name="margin" >
-    <number>15</number>
-   </property>
    <item>
     <widget class="QStackedWidget" name="stackedWidget" >
-     <property name="sizePolicy" >
-      <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize" >
-      <size>
-       <width>770</width>
-       <height>100</height>
-      </size>
-     </property>
-     <property name="maximumSize" >
-      <size>
-       <width>770</width>
-       <height>100</height>
-      </size>
-     </property>
      <property name="currentIndex" >
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="page_1" >
       <layout class="QVBoxLayout" name="verticalLayout_2" >
-       <property name="sizeConstraint" >
-        <enum>QLayout::SetFixedSize</enum>
-       </property>
        <property name="margin" >
         <number>0</number>
        </property>
        <item>
         <widget class="QLabel" name="label_1" >
-         <property name="sizePolicy" >
-          <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize" >
-          <size>
-           <width>770</width>
-           <height>75</height>
-          </size>
-         </property>
-         <property name="maximumSize" >
-          <size>
-           <width>770</width>
-           <height>75</height>
-          </size>
-         </property>
          <property name="palette" >
           <palette>
            <active>
@@ -641,24 +599,6 @@
        </property>
        <item>
         <widget class="QLabel" name="label_2" >
-         <property name="sizePolicy" >
-          <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize" >
-          <size>
-           <width>770</width>
-           <height>100</height>
-          </size>
-         </property>
-         <property name="maximumSize" >
-          <size>
-           <width>770</width>
-           <height>100</height>
-          </size>
-         </property>
          <property name="palette" >
           <palette>
            <active>

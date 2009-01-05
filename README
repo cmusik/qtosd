@@ -18,10 +18,12 @@ Configuration & usage
 ---------------------
 There are some parameters you can use:
 
- -n 			Don't start in daemon mode
- -p port 		Port for TCP server (p == 0 disables TCP server)
- -b background.svg 	Imagefile for background
- -h 			Show a brief help
+ -b, --background FILE   Set FILE as background image
+ -p, --port PORT         Use PORT as TCP port for incoming connections
+ -t, --timeout TIME      Show OSD for TIME seconds
+ -n, --no-daemon         Don't start in daemon mode
+ -w, --width             Width of OSD
+ -h, --height            Height of OSD
 
 The text you send can also have a special format:
 

@@ -18,6 +18,7 @@
 #include <QApplication>
 #include <QDBusConnection>
 #include <iostream>
+#include <iomanip>
 #include <unistd.h>
 
 #include "osd.h"
@@ -27,8 +28,20 @@
 
 #include <X11/extensions/Xrender.h>
 
-void usage() {
-	std::cout << "Usage: $0 [ -p port | -n | -b background.svg ]" << std::endl;
+void usage(QString name) {
+	using namespace std;
+	int w = 25;
+	cout << "Usage: " << name.toStdString() << " [ -n | -p PORT | -b FILE | -t TIME | -w WIDTH | -h HEIGHT ]" << endl;
+	cout << left;
+	cout << endl;
+	cout << setw(w) << " -b, --background FILE" << "Set FILE as background image" << endl;
+	cout << setw(w) << " -p, --port PORT" << "Use PORT as TCP port for incoming connections" << endl;
+	cout << setw(w) << " -t, --timeout TIME" << "Show OSD for TIME seconds" << endl;
+	cout << setw(w) << " -n, --no-daemon" << "Don't start in daemon mode" << endl;
+	cout << setw(w) << " -w, --width" << "Width of OSD" << endl;
+	cout << setw(w) << " -h, --height" << "Height of OSD" << endl;
+	cout << setw(w) << "     --help" << "This message" << endl;
+	cout << endl;
 	exit(0);
 }
 
@@ -81,20 +94,35 @@ int main (int argc, char *argv[]) {
 	int height = 130;
 
 	for (int i = 1; i < args.count(); ++i) {
-		if (args[i] == "-n")
+		if (args[i] == "-n" || args[i] == "--no-daemon") {
 			daemonize = false;
-		if (args[i] == "-b")
+			continue;
+		}
+		if (args[i] == "-b" || args[i] == "--background") {
 			background = args[i+1];
-		if (args[i] == "-p")
-			port = args[i+1].toInt();
-		if (args[i] == "-t")
-			timeout = args[i+1].toFloat();
-		if (args[i] == "-w")
-			width = args[i+1].toInt();
-		if (args[i] == "-h")
-			height = args[i+1].toInt();
-		if (args[i] == "-help")
-			usage();
+			continue;
+		}
+		if (args[i] == "-p" || args[i] == "--port") {
+			port = args[++i].toInt();
+			continue;
+		}
+		if (args[i] == "-t" || args[i] == "--timeout") {
+			timeout = args[++i].toFloat();
+			continue;
+		}
+		if (args[i] == "-w" || args[i] == "--width") {
+			width = args[++i].toInt();
+			continue;
+		}
+		if (args[i] == "-h" || args[i] == "--height") {
+			height = args[++i].toInt();
+			continue;
+		}
+		if (args[i] == "--help") {
+			usage(args[0]);
+			continue;
+		}
+		qWarning() << "Unknown Option: " << args[i];
 	}
 
 	OSD osd(background, timeout, width, height);

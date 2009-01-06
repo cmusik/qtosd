@@ -45,6 +45,13 @@ void usage(QString name) {
 	exit(0);
 }
 
+void fail(bool ok, QString msg) {
+	if (!ok) {
+		std::cerr << msg.toStdString() << std::endl;
+		exit(255);
+	}
+}
+
 int main (int argc, char *argv[]) {
 	bool  argbVisual=false;
 	Display *dpy = XOpenDisplay(0); // open default display
@@ -94,6 +101,7 @@ int main (int argc, char *argv[]) {
 	int height = 130;
 
 	for (int i = 1; i < args.count(); ++i) {
+		bool ok = true;
 		if (args[i] == "-n" || args[i] == "--no-daemon") {
 			daemonize = false;
 			continue;
@@ -103,33 +111,33 @@ int main (int argc, char *argv[]) {
 			continue;
 		}
 		if (args[i] == "-p" || args[i] == "--port") {
-			port = args[++i].toInt();
+			port = args[++i].toInt(&ok);
+			fail(ok, "Error: missing or invalid port");
 			continue;
 		}
 		if (args[i] == "-t" || args[i] == "--timeout") {
-			timeout = args[++i].toFloat();
+			timeout = args[++i].toFloat(&ok);
+			fail(ok, "Error: missing or invalid timeout value");
 			continue;
 		}
 		if (args[i] == "-w" || args[i] == "--width") {
-			width = args[++i].toInt();
+			width = args[++i].toInt(&ok);
+			fail(ok, "Error: missing or invalid width");
 			continue;
 		}
 		if (args[i] == "-h" || args[i] == "--height") {
-			height = args[++i].toInt();
+			height = args[++i].toInt(&ok);
+			fail(ok, "Error: missing or invalid height");
 			continue;
 		}
 		if (args[i] == "--help") {
 			usage(args[0]);
 			continue;
 		}
-		qWarning() << "Unknown Option: " << args[i];
+		std::cerr << "Warning: unknown option " << args[i].toStdString() << std::endl;
 	}
 
-	if (daemonize)
-		daemon(1, 1);
-
 	OSD osd(background, timeout, width, height);
-	MixerThread *t = new MixerThread();
 
 	new DBusAdaptor(&app, &osd);
 	QDBusConnection dbuscon = QDBusConnection::connectToBus(QDBusConnection::SessionBus, "qtosd");
@@ -145,6 +153,10 @@ int main (int argc, char *argv[]) {
 		}
 	}
 
+	if (daemonize)
+		daemon(1, 1);
+
+	MixerThread *t = new MixerThread();
 	QObject::connect(t, SIGNAL(showText(QString)), &osd, SLOT(setText(QString)));
 
 	if (!t->isRunning()) {

@@ -65,6 +65,13 @@ OSD::OSD(QString bg, float t, int w, int h) : QDialog(), timeout(t) {
 	move(r.x()+((r.width()-width())/2), r.y()+((r.height()-height())/2)+400);
 	text = new QStringList();
 	setWindowOpacity(0.1);
+
+	progressRegexp = new QRegExp("^(\\d+)/(\\d+) (.*)");
+}
+
+OSD::~OSD() {
+	if (progressRegexp)
+		delete progressRegexp;
 }
 
 void OSD::setText(QString s) {
@@ -73,11 +80,9 @@ void OSD::setText(QString s) {
 		fadeIn();
 	}
 
-	QRegExp rx("^(\\d+)/(\\d+) (.*)");
-
-	if (rx.exactMatch(s)) {
+	if (progressRegexp->exactMatch(s)) {
 		stackedWidget->setCurrentWidget(page_1);
-		QStringList l = rx.capturedTexts();
+		QStringList l = progressRegexp->capturedTexts();
 
 		fitText(label_1, &l[3], 1);
 

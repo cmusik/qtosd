@@ -38,8 +38,8 @@ void usage(QString name) {
 	cout << setw(w) << " -p, --port PORT" << "Use PORT as TCP port for incoming connections" << endl;
 	cout << setw(w) << " -t, --timeout TIME" << "Show OSD for TIME seconds" << endl;
 	cout << setw(w) << " -n, --no-daemon" << "Don't start in daemon mode" << endl;
-	cout << setw(w) << " -w, --width" << "Width of OSD" << endl;
-	cout << setw(w) << " -h, --height" << "Height of OSD" << endl;
+	cout << setw(w) << " -w, --width WIDTH" << "Width of OSD" << endl;
+	cout << setw(w) << " -h, --height HEIGHT" << "Height of OSD" << endl;
 	cout << setw(w) << "     --help" << "This message" << endl;
 	cout << endl;
 	exit(0);
@@ -125,6 +125,9 @@ int main (int argc, char *argv[]) {
 		qWarning() << "Unknown Option: " << args[i];
 	}
 
+	if (daemonize)
+		daemon(1, 1);
+
 	OSD osd(background, timeout, width, height);
 	MixerThread *t = new MixerThread();
 
@@ -147,9 +150,6 @@ int main (int argc, char *argv[]) {
 	if (!t->isRunning()) {
 		osd.setText("Couldn't start mixer thread... Won't show any volume changes!");
 	}
-
-	if (daemonize)
-		daemon(1, 1);
 
 	return app.exec();
 }

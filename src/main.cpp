@@ -144,10 +144,12 @@ int main (int argc, char *argv[]) {
 
 	QObject::connect(t, SIGNAL(showText(QString)), &osd, SLOT(setText(QString)));
 
+	if (!t->isRunning()) {
+		osd.setText("Couldn't start mixer thread... Won't show any volume changes!");
+	}
+
 	if (daemonize)
 		daemon(1, 1);
-
-	t->start();
 
 	return app.exec();
 }

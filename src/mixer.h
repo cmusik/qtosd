@@ -56,7 +56,7 @@ class MixerThread : public QThread {
 		int alsa_mixer_get_volume(Mixer*);
 		int alsa_mixer_open();
 		Mixer* get_new_mixer();
-		void init_alsa();
+		bool init_alsa();
 		void display_osd(Mixer*);
 
 		Mixer *mixer;

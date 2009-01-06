@@ -18,7 +18,8 @@
 #include "mixer.h"
 
 MixerThread::MixerThread() {
-	init_alsa();
+	if (init_alsa())
+		start();
 }
 
 MixerThread::~MixerThread() {
@@ -53,7 +54,7 @@ int MixerThread::alsa_mixer_open() {
 
 	if (snd_mixer_selem_id_malloc(&sid) != 0) {
 		fprintf(stderr, "Error: Couldn't alloc mixer\n");
-		exit(ERROR);
+		return ERROR;
 	}
 
 	rc = snd_mixer_open(&alsa_mixer_handle, 0);
@@ -99,7 +100,10 @@ int MixerThread::alsa_mixer_open() {
 
 		alsa_mixer_get_volume(m);
 
-		m->next = get_new_mixer();
+		if ((m->next = get_new_mixer()) == NULL) {
+			fprintf(stderr, "Error: Couldn't alloc mixer\n");
+			return ERROR;
+		}
 		m = m->next;
 
 		elem = snd_mixer_elem_next(elem);
@@ -173,7 +177,7 @@ Mixer* MixerThread::get_new_mixer() {
 	Mixer *m = NULL;
 	if ((m = (Mixer*) malloc(sizeof(Mixer))) == NULL) {
 		fprintf(stderr, "Error: Couldn't alloc mixer\n");
-		exit(ERROR);
+		return NULL;
 	}
 	m->mixer_elem = NULL;
 
@@ -190,16 +194,17 @@ Mixer* MixerThread::get_new_mixer() {
 	return m;
 }
 
-void MixerThread::init_alsa() {
+bool MixerThread::init_alsa() {
 	alsa_mixer_device = strdup("default");
-	mixer = get_new_mixer();
-
-	int rc = alsa_mixer_open();
-
-	if (rc != SUCCESS) {
-		fprintf(stderr, "Error: could not open mixer\n");
-		exit(ERROR);
+	if ((mixer = get_new_mixer()) == NULL) {
+		return false;
 	}
+
+	if (alsa_mixer_open() != SUCCESS) {
+		fprintf(stderr, "Error: could not open mixer\n");
+		return false;
+	}
+	return true;
 }
 
 void MixerThread::display_osd(Mixer *m) {

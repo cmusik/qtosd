@@ -27,7 +27,7 @@
 
 #define MINFONTSIZE 12
 
-OSD::OSD(QString bg, float t, int w, int h) : QDialog(), timeout(t) {
+OSD::OSD(QString bg, float t, int w, int h, int s) : QDialog(), timeout(t) {
 	timer = new QTimer(this);
 	fadeOutTimer = new QTimer(this);
 	fadeInTimer = new QTimer(this);
@@ -61,7 +61,7 @@ OSD::OSD(QString bg, float t, int w, int h) : QDialog(), timeout(t) {
 	}
 
 	QDesktopWidget desktop;
-	QRect r = desktop.screenGeometry(0);
+	QRect r = desktop.screenGeometry(s);
 	move(r.x()+((r.width()-width())/2), r.y()+((r.height()-height())/2)+400);
 	text = new QStringList();
 	setWindowOpacity(0.1);

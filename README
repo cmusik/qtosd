@@ -24,6 +24,7 @@ There are some parameters you can use:
  -n, --no-daemon         Don't start in daemon mode
  -w, --width             Width of OSD
  -h, --height            Height of OSD
+ -s, --screen SCREEN     Show OSD on SCREEN
 
 The text you send can also have a special format:
 

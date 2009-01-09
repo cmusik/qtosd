@@ -30,7 +30,7 @@ class OSD : public QDialog, private Ui::OSD {
 	Q_OBJECT
 
 	public:
-		OSD(QString, float, int, int);
+		OSD(QString, float, int, int, int=0);
 		~OSD();
 
 	protected:

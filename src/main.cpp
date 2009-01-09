@@ -28,10 +28,18 @@
 
 #include <X11/extensions/Xrender.h>
 
+bool daemonize = true;
+QString background;
+int port = 5000;
+float timeout = 4;
+int width = 800;
+int height = 130;
+int screen = 0;
+
 void usage(QString name) {
 	using namespace std;
 	int w = 25;
-	cout << "Usage: " << name.toStdString() << " [ -n | -p PORT | -b FILE | -t TIME | -w WIDTH | -h HEIGHT ]" << endl;
+	cout << "Usage: " << name.toStdString() << " [ -n | -p PORT | -b FILE | -t TIME | -w WIDTH | -h HEIGHT | -s SCREEN ]" << endl;
 	cout << left;
 	cout << endl;
 	cout << setw(w) << " -b, --background FILE" << "Set FILE as background image" << endl;
@@ -40,6 +48,7 @@ void usage(QString name) {
 	cout << setw(w) << " -n, --no-daemon" << "Don't start in daemon mode" << endl;
 	cout << setw(w) << " -w, --width WIDTH" << "Width of OSD" << endl;
 	cout << setw(w) << " -h, --height HEIGHT" << "Height of OSD" << endl;
+	cout << setw(w) << " -s, --screen SCREEN" << "Show OSD on SCREEN" << endl;
 	cout << setw(w) << "     --help" << "This message" << endl;
 	cout << endl;
 	exit(0);
@@ -52,54 +61,7 @@ void fail(bool ok, QString msg) {
 	}
 }
 
-int main (int argc, char *argv[]) {
-	bool  argbVisual=false;
-	Display *dpy = XOpenDisplay(0); // open default display
-	if (!dpy) {
-		qWarning("Cannot connect to the X server");
-		exit(1);
-	}
-
-	int screen = DefaultScreen(dpy);
-	Colormap colormap = 0;
-	Visual *visual = 0;
-	int eventBase, errorBase;
-
-	if (XRenderQueryExtension(dpy, &eventBase, &errorBase)) {
-		int nvi;
-		XVisualInfo templ;
-		templ.screen  = screen;
-		templ.depth   = 32;
-		templ.c_class = TrueColor;
-		XVisualInfo *xvi = XGetVisualInfo(dpy, VisualScreenMask |
-				VisualDepthMask |
-				VisualClassMask, &templ, &nvi);
-
-		for (int i = 0; i < nvi; ++i) {
-			XRenderPictFormat *format = XRenderFindVisualFormat(dpy,
-					xvi[i].visual);
-			if (format->type == PictTypeDirect && format->direct.alphaMask) {
-				visual = xvi[i].visual;
-				colormap = XCreateColormap(dpy, RootWindow(dpy, screen),
-						visual, AllocNone);
-				argbVisual=true;
-				break;
-			}
-		}
-	}
-
-	QApplication app(dpy, argc, argv,
-			Qt::HANDLE(visual), Qt::HANDLE(colormap));
-
-	QStringList args = app.arguments();
-
-	bool daemonize = true;
-	QString background;
-	int port = 5000;
-	float timeout = 4;
-	int width = 800;
-	int height = 130;
-
+void handleArgs(QStringList args) {
 	for (int i = 1; i < args.count(); ++i) {
 		bool ok = true;
 		if (args[i] == "-n" || args[i] == "--no-daemon") {
@@ -130,19 +92,65 @@ int main (int argc, char *argv[]) {
 			fail(ok, "Error: missing or invalid height");
 			continue;
 		}
+		if (args[i] == "-s" || args[i] == "--screen") {
+			screen = args[++i].toInt(&ok);
+			fail(ok, "Error: missing or invalid screen");
+			continue;
+		}
 		if (args[i] == "--help") {
 			usage(args[0]);
 			continue;
 		}
 		std::cerr << "Warning: unknown option " << args[i].toStdString() << std::endl;
 	}
+}
 
-	OSD osd(background, timeout, width, height);
+QApplication* createApp(int argc, char *argv[]) {
+	bool  argbVisual=false;
+	Colormap colormap = 0;
+	Visual *visual = 0;
+	Display *dpy = XOpenDisplay(0); // open default display
 
-	new DBusAdaptor(&app, &osd);
+	if (!dpy) {
+		qWarning("Cannot connect to the X server");
+		exit(1);
+	}
+
+	int xscreen = DefaultScreen(dpy);
+	int eventBase, errorBase;
+
+	if (XRenderQueryExtension(dpy, &eventBase, &errorBase)) {
+		int nvi;
+		XVisualInfo templ;
+		templ.screen  = xscreen;
+		templ.depth   = 32;
+		templ.c_class = TrueColor;
+		XVisualInfo *xvi = XGetVisualInfo(dpy, VisualScreenMask | VisualDepthMask | VisualClassMask, &templ, &nvi);
+
+		for (int i = 0; i < nvi; ++i) {
+			XRenderPictFormat *format = XRenderFindVisualFormat(dpy, xvi[i].visual);
+			if (format->type == PictTypeDirect && format->direct.alphaMask) {
+				visual = xvi[i].visual;
+				colormap = XCreateColormap(dpy, RootWindow(dpy, xscreen), visual, AllocNone);
+				argbVisual=true;
+				break;
+			}
+		}
+	}
+	QApplication *app = new QApplication(dpy, argc, argv, Qt::HANDLE(visual), Qt::HANDLE(colormap));
+	handleArgs(app->arguments());
+	return app;
+}
+
+int main (int argc, char *argv[]) {
+	QApplication *app = createApp(argc, argv);
+
+	OSD osd(background, timeout, width, height, screen);
+
+	new DBusAdaptor(app, &osd);
 	QDBusConnection dbuscon = QDBusConnection::connectToBus(QDBusConnection::SessionBus, "qtosd");
 	dbuscon.registerService("de.senfdax.qtosd");
-	dbuscon.registerObject("/osd", &app);
+	dbuscon.registerObject("/osd", app);
 
 	if (port > 0) {
 		ReaderServer *s = new ReaderServer(&osd);
@@ -153,8 +161,9 @@ int main (int argc, char *argv[]) {
 		}
 	}
 
-	if (daemonize)
+	if (daemonize) {
 		daemon(1, 1);
+	}
 
 	MixerThread *t = new MixerThread();
 	QObject::connect(t, SIGNAL(showText(QString)), &osd, SLOT(setText(QString)));
@@ -163,5 +172,9 @@ int main (int argc, char *argv[]) {
 		osd.setText("Couldn't start mixer thread... Won't show any volume changes!");
 	}
 
-	return app.exec();
+	int ret = app->exec();
+
+	delete app;
+
+	return ret;
 }

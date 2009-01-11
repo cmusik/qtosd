@@ -67,6 +67,7 @@ OSD::OSD(QString bg, float t, int w, int h, int s) : QDialog(), timeout(t) {
 	setWindowOpacity(0.1);
 
 	progressRegexp = new QRegExp("^(\\d+)/(\\d+) (.*)");
+	fileRegexp = new QRegExp("^f:(/.*\\.png)/(.*)");
 }
 
 OSD::~OSD() {
@@ -89,6 +90,18 @@ void OSD::setText(QString s) {
 		label_1->setText(l[3]);
 		value_1->setMaximum(l[2].toInt());
 		value_1->setValue(l[1].toInt());
+	}
+	else if (fileRegexp->exactMatch(s)) {
+		QString f = fileRegexp->cap(1);
+		QString t = fileRegexp->cap(2);
+		stackedWidget->setCurrentWidget(page_3);
+
+		QImage img(f);
+		img = img.scaledToHeight(image->height());
+
+		image->setPixmap(QPixmap::fromImage(img));
+		fitText(label_3, &t, 1);
+		label_3->setText(t);
 	}
 	else {
 		stackedWidget->setCurrentWidget(page_2);

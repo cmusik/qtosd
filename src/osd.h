@@ -55,6 +55,7 @@ class OSD : public QDialog, private Ui::OSD {
 		QPixmap cache;
 		float timeout;
 		QRegExp *progressRegexp;
+		QRegExp *fileRegexp;
 
 };
 

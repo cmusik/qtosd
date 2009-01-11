@@ -35,6 +35,7 @@ float timeout = 4;
 int width = 800;
 int height = 130;
 int screen = 0;
+QString name;
 
 void usage(QString name) {
 	using namespace std;
@@ -57,11 +58,13 @@ void usage(QString name) {
 void fail(bool ok, QString msg) {
 	if (!ok) {
 		std::cerr << msg.toStdString() << std::endl;
+		usage(name);
 		exit(255);
 	}
 }
 
 void handleArgs(QStringList args) {
+	name = args[0];
 	for (int i = 1; i < args.count(); ++i) {
 		bool ok = true;
 		if (args[i] == "-n" || args[i] == "--no-daemon") {
@@ -69,31 +72,49 @@ void handleArgs(QStringList args) {
 			continue;
 		}
 		if (args[i] == "-b" || args[i] == "--background") {
-			background = args[++i];
+			if (args.count()-1 < i+1)
+				ok = false;
+			else
+				background = args[++i];
 			continue;
 		}
 		if (args[i] == "-p" || args[i] == "--port") {
-			port = args[++i].toInt(&ok);
+			if (args.count()-1 < i+1)
+				ok = false;
+			else
+				port = args[++i].toInt(&ok);
 			fail(ok, "Error: missing or invalid port");
 			continue;
 		}
 		if (args[i] == "-t" || args[i] == "--timeout") {
-			timeout = args[++i].toFloat(&ok);
+			if (args.count()-1 < i+1)
+				ok = false;
+			else
+				timeout = args[++i].toFloat(&ok);
 			fail(ok, "Error: missing or invalid timeout value");
 			continue;
 		}
 		if (args[i] == "-w" || args[i] == "--width") {
-			width = args[++i].toInt(&ok);
+			if (args.count()-1 < i+1)
+				ok = false;
+			else
+				width = args[++i].toInt(&ok);
 			fail(ok, "Error: missing or invalid width");
 			continue;
 		}
 		if (args[i] == "-h" || args[i] == "--height") {
-			height = args[++i].toInt(&ok);
+			if (args.count()-1 < i+1)
+				ok = false;
+			else
+				height = args[++i].toInt(&ok);
 			fail(ok, "Error: missing or invalid height");
 			continue;
 		}
 		if (args[i] == "-s" || args[i] == "--screen") {
-			screen = args[++i].toInt(&ok);
+			if (args.count()-1 < i+1)
+				ok = false;
+			else
+				screen = args[++i].toInt(&ok);
 			fail(ok, "Error: missing or invalid screen");
 			continue;
 		}

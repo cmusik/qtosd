@@ -66,8 +66,8 @@ OSD::OSD(QString bg, float t, int w, int h, int s) : QDialog(), timeout(t) {
 	text = new QStringList();
 	setWindowOpacity(0.1);
 
-	progressRegexp = new QRegExp("^(\\d+)/(\\d+) (.*)");
-	fileRegexp = new QRegExp("^f:(/.*\\.png)/(.*)");
+	progressRegexp = new QRegExp("^(\\d+)/(\\d+)$");
+	fileRegexp = new QRegExp("^f:(/.*\\.png)");
 }
 
 OSD::~OSD() {
@@ -76,55 +76,73 @@ OSD::~OSD() {
 }
 
 void OSD::setText(QString s) {
+	stackedWidget->setCurrentWidget(page_3);
+
+	QString t;
+
+	// f:/home..%1/100%text
+
+	progressBar->setHidden(true);
+	image->setHidden(true);
+	label->setHidden(true);
+
+	QRegExp rx("^(\\((.+)\\))*(.*)");
+	rx.setMinimal(true);
+	rx.exactMatch(s);
+
+	QStringList params = s.split("%", QString::SkipEmptyParts);
+
+	QString file;
+
+	foreach (QString p, params) {
+		if (progressRegexp->exactMatch(p)) {
+			progressBar->setHidden(false);
+
+			QStringList l = progressRegexp->capturedTexts();
+			progressBar->setMaximum(l[2].toInt());
+			progressBar->setValue(l[1].toInt());
+		}
+		else if (fileRegexp->exactMatch(p)) {
+			image->setHidden(false);
+			file = fileRegexp->cap(1);
+		}
+		else {
+			label->setHidden(false);
+			t += p + " ";
+		}
+	}
+
 	timer->start(int (timeout*1000));
 	if (isHidden() || fadeOutTimer->isActive()) {
 		fadeIn();
 	}
 
-	if (progressRegexp->exactMatch(s)) {
-		stackedWidget->setCurrentWidget(page_1);
-		QStringList l = progressRegexp->capturedTexts();
-
-		fitText(label_1, &l[3], 1);
-
-		label_1->setText(l[3]);
-		value_1->setMaximum(l[2].toInt());
-		value_1->setValue(l[1].toInt());
-	}
-	else if (fileRegexp->exactMatch(s)) {
-		QString f = fileRegexp->cap(1);
-		QString t = fileRegexp->cap(2);
-		stackedWidget->setCurrentWidget(page_3);
-
-		QImage img(f);
+	if (!file.isEmpty()) {
+		QImage img(file);
 		img = img.scaledToHeight(image->height());
 
 		image->setPixmap(QPixmap::fromImage(img));
-		fitText(label_3, &t, 1);
-		label_3->setText(t);
-	}
-	else {
-		stackedWidget->setCurrentWidget(page_2);
-
-		bool clear = false;
-		if (s.startsWith("c/")) {
-			clear = true;
-			text->clear();
-			s = s.remove(0, 2);
-		}
-
-		if (text->count() >= 4) {
-			text->removeFirst();
-		}
-		(*text) << s;
-
-		fitText(label_2, text);
-
-		label_2->setText(text->join(QString('\n')));
-		if (clear)
-			text->clear();
 	}
 
+	int lines = 1;
+	QRegExp linesRegex("^(\\d+)/(.*)");
+	if (linesRegex.exactMatch(t)) {
+		lines = linesRegex.cap(1).toInt();
+		t = linesRegex.cap(2);
+	}
+	else
+		text->clear();
+
+	while (text->count() >= lines) {
+		text->removeFirst();
+	}
+	(*text) << t.trimmed();
+
+	fitText(label, text);
+
+	label->setText(text->join(QString('\n')));
+	if (lines == 1)
+		text->clear();
 }
 
 void OSD::fitText(QLabel *l, QString *str, int lines=1) {
@@ -144,6 +162,7 @@ void OSD::fitText(QLabel *l, QString *str, int lines=1) {
 		h = l->fontMetrics().height();
 	}
 	l->setFont(optimal);
+	qDebug() << l->size();
 
 	if (optimal.pointSize() == MINFONTSIZE && lines == 1) {
 		*str = l->fontMetrics().elidedText(*str, Qt::ElideMiddle, l->width());

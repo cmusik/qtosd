@@ -212,5 +212,5 @@ void MixerThread::display_osd(Mixer *m) {
 	if (m->has_switch && m->muted_left && m->muted_right) {
 		name = name + " (muted)";
 	}
-	emit showText(QString("%1/%2 %3").arg(m->vol_left).arg("100").arg(name));
+	emit showText(QString("%1/%2\%%3").arg(m->vol_left).arg("100").arg(name));
 }

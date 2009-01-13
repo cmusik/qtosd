@@ -9,7 +9,7 @@ RCC_DIR = .rcc
 QMAKE_CXXFLAGS = -I/usr/include/alsa -lasound
 QMAKE_LFLAGS += -lasound
 QT += svg network dbus
-CONFIG += debug
+CONFIG += silent
 
 # Input
 RESOURCES = qtosd.qrc

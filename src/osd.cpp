@@ -162,7 +162,6 @@ void OSD::fitText(QLabel *l, QString *str, int lines=1) {
 		h = l->fontMetrics().height();
 	}
 	l->setFont(optimal);
-	qDebug() << l->size();
 
 	if (optimal.pointSize() == MINFONTSIZE && lines == 1) {
 		*str = l->fontMetrics().elidedText(*str, Qt::ElideMiddle, l->width());

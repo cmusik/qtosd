@@ -50,7 +50,7 @@ class OSD : public QDialog, private Ui::OSD {
 		QTimer *timer;
 		QTimer *fadeOutTimer;
 		QTimer *fadeInTimer;
-		QStringList *text;
+		QStringList *textList;
 		QSvgRenderer *renderer;
 		QPixmap cache;
 		float timeout;

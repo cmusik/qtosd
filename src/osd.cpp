@@ -63,7 +63,7 @@ OSD::OSD(QString bg, float t, int w, int h, int s) : QDialog(), timeout(t) {
 	QDesktopWidget desktop;
 	QRect r = desktop.screenGeometry(s);
 	move(r.x()+((r.width()-width())/2), r.y()+((r.height()-height())/2)+400);
-	text = new QStringList();
+	textList = new QStringList();
 	setWindowOpacity(0.1);
 
 	progressRegexp = new QRegExp("^(\\d+)/(\\d+)$");
@@ -73,28 +73,32 @@ OSD::OSD(QString bg, float t, int w, int h, int s) : QDialog(), timeout(t) {
 OSD::~OSD() {
 	if (progressRegexp)
 		delete progressRegexp;
+
+	textList->clear();
+	delete textList;
 }
 
 void OSD::setText(QString s) {
-	stackedWidget->setCurrentWidget(page_3);
+	QString text;
+	QString file;
+	QRegExp rx("^(\\((.+)\\))*(.*)");
 
-	QString t;
+	// show everything, to get proper size
+	timer->start(int (timeout*1000));
+	if (isHidden() || fadeOutTimer->isActive()) {
+		fadeIn();
+	}
 
-	// f:/home..%1/100%text
+	setUpdatesEnabled(false);
 
 	progressBar->setHidden(true);
 	image->setHidden(true);
 	label->setHidden(true);
 
-	QRegExp rx("^(\\((.+)\\))*(.*)");
 	rx.setMinimal(true);
 	rx.exactMatch(s);
 
-	QStringList params = s.split("%", QString::SkipEmptyParts);
-
-	QString file;
-
-	foreach (QString p, params) {
+	foreach (QString p, s.split("%", QString::SkipEmptyParts)) {
 		if (progressRegexp->exactMatch(p)) {
 			progressBar->setHidden(false);
 
@@ -108,41 +112,41 @@ void OSD::setText(QString s) {
 		}
 		else {
 			label->setHidden(false);
-			t += p + " ";
+			text += p + " ";
 		}
 	}
 
-	timer->start(int (timeout*1000));
-	if (isHidden() || fadeOutTimer->isActive()) {
-		fadeIn();
-	}
-
+	// open image
 	if (!file.isEmpty()) {
 		QImage img(file);
-		img = img.scaledToHeight(image->height());
-
-		image->setPixmap(QPixmap::fromImage(img));
+		if (!img.isNull()) {
+			img = img.scaledToHeight(image->height());
+			image->setPixmap(QPixmap::fromImage(img));
+		}
 	}
 
+	// show text
 	int lines = 1;
 	QRegExp linesRegex("^(\\d+)/(.*)");
-	if (linesRegex.exactMatch(t)) {
+	if (linesRegex.exactMatch(text)) {
 		lines = linesRegex.cap(1).toInt();
-		t = linesRegex.cap(2);
+		text = linesRegex.cap(2);
 	}
 	else
-		text->clear();
+		textList->clear();
 
-	while (text->count() >= lines) {
-		text->removeFirst();
+	while (textList->count() >= lines) {
+		textList->removeFirst();
 	}
-	(*text) << t.trimmed();
+	textList->push_back(text.trimmed());
 
-	fitText(label, text);
+	fitText(label, textList);
 
-	label->setText(text->join(QString('\n')));
+	label->setText(textList->join(QString('\n')));
 	if (lines == 1)
-		text->clear();
+		textList->clear();
+
+	setUpdatesEnabled(true);
 }
 
 void OSD::fitText(QLabel *l, QString *str, int lines=1) {
@@ -211,7 +215,7 @@ void OSD::mouseReleaseEvent(QMouseEvent *) {
 }
 
 void OSD::hideEvent(QHideEvent *) {
-	text->clear();
+	textList->clear();
 }
 
 void OSD::fadeOut() {

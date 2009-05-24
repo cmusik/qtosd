@@ -27,7 +27,7 @@
 
 #define MINFONTSIZE 12
 
-OSD::OSD(QString bg, float t, int w, int h, int s) : QDialog(), timeout(t) {
+OSD::OSD(QString bg, float t, int w, int h, int s) : QWidget(), timeout(t) {
 	timer = new QTimer(this);
 	fadeOutTimer = new QTimer(this);
 	fadeInTimer = new QTimer(this);
@@ -40,7 +40,7 @@ OSD::OSD(QString bg, float t, int w, int h, int s) : QDialog(), timeout(t) {
 	connect(fadeInTimer, SIGNAL(timeout()), this, SLOT(fadeIn()));
 
 	setupUi(this);
-	setWindowFlags(Qt::ToolTip|Qt::WindowStaysOnTopHint);
+	setWindowFlags(Qt::Window|Qt::X11BypassWindowManagerHint|Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint);
 
 	if (QFileInfo(bg).exists())
 		renderer = new QSvgRenderer(bg, this);
@@ -107,7 +107,6 @@ void OSD::setText(QString s) {
 			progressBar->setValue(l[1].toInt());
 		}
 		else if (fileRegexp->exactMatch(p)) {
-			image->setHidden(false);
 			file = fileRegexp->cap(1);
 		}
 		else {
@@ -122,6 +121,7 @@ void OSD::setText(QString s) {
 		if (!img.isNull()) {
 			img = img.scaledToHeight(image->height());
 			image->setPixmap(QPixmap::fromImage(img));
+			image->setHidden(false);
 		}
 	}
 

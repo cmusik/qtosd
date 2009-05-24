@@ -26,7 +26,7 @@
 
 #include "ui_osd.h"
 
-class OSD : public QDialog, private Ui::OSD {
+class OSD : public QWidget, private Ui::OSD {
 	Q_OBJECT
 
 	public:

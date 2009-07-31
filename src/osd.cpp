@@ -40,7 +40,7 @@ OSD::OSD(QString bg, float t, int w, int h, int s) : QWidget(), timeout(t) {
 	connect(fadeInTimer, SIGNAL(timeout()), this, SLOT(fadeIn()));
 
 	setupUi(this);
-	setWindowFlags(Qt::Window|Qt::X11BypassWindowManagerHint|Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint);
+	setWindowFlags(Qt::ToolTip|Qt::X11BypassWindowManagerHint|Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint);
 
 	if (QFileInfo(bg).exists())
 		renderer = new QSvgRenderer(bg, this);

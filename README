@@ -31,19 +31,25 @@ The text you send can also have a special format:
 some text
   -> shows just "some text"
 
-c/some text
-  -> clears the display before showing this text. (usefull for toggling options)
+1%some text
+  -> shows only one line of text (usefull for toggling options)
 
-10/100 some text
+10/100%some text
   -> shows a progress bar and use 10 as value, 100 as max and "some text".
+
+file.jpg%text
+  -> displays file.jpg on the left side and text
+
+file.jpg%1/10%text
+  -> displays image, progressbar and text
 
 Have also a look at the examples.
 
 Background
 ----------
 For the background you have to use a SVG file. Just create it with a size ratio
-of 800:150 (pixels). To use translucency you need a compositing window manager
-or you have to use xcompmgr.
+of 800:150 (pixels). For other values you have to set width and heigt.  To use
+translucency you need a compositing window manager or you have to use xcompmgr.
 
 Have fun ;)
 

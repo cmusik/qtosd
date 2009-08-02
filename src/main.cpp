@@ -44,7 +44,7 @@ void usage(QString name) {
 	cout << left;
 	cout << endl;
 	cout << setw(w) << " -b, --background FILE" << "Set FILE as background image" << endl;
-	cout << setw(w) << " -p, --port PORT" << "Use PORT as TCP port for incoming connections" << endl;
+	cout << setw(w) << " -p, --port PORT" << "Use PORT as TCP port for incoming connections (port 0 to disable TCP)" << endl;
 	cout << setw(w) << " -t, --timeout TIME" << "Show OSD for TIME seconds" << endl;
 	cout << setw(w) << " -n, --no-daemon" << "Don't start in daemon mode" << endl;
 	cout << setw(w) << " -w, --width WIDTH" << "Width of OSD" << endl;

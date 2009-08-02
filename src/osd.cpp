@@ -135,6 +135,9 @@ void OSD::setText(QString s) {
 	else
 		textList->clear();
 
+	if (lines <= 0)
+		lines = 1;
+
 	while (textList->count() >= lines) {
 		textList->removeFirst();
 	}

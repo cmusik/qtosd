@@ -30,7 +30,7 @@ class OSD : public QWidget, private Ui::OSD {
 	Q_OBJECT
 
 	public:
-		OSD(QString, float, int, int, int=0);
+		OSD(QString, float, int, int, int, int, int=0);
 		~OSD();
 
 	protected:

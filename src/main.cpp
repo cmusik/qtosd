@@ -35,6 +35,8 @@ float timeout = 4;
 int width = 800;
 int height = 130;
 int screen = 0;
+int space_bottom = 50;
+int space_left = -1;
 QString name;
 
 void usage(QString name) {
@@ -49,6 +51,8 @@ void usage(QString name) {
 	cout << setw(w) << " -n, --no-daemon" << "Don't start in daemon mode" << endl;
 	cout << setw(w) << " -w, --width WIDTH" << "Width of OSD" << endl;
 	cout << setw(w) << " -h, --height HEIGHT" << "Height of OSD" << endl;
+	cout << setw(w) << " -sb, --space-bottom HEIGHT" << "Free space below OSD" << endl;
+	cout << setw(w) << " -sl, --space-left HEIGHT" << "Free space left of OSD" << endl;
 	cout << setw(w) << " -s, --screen SCREEN" << "Show OSD on SCREEN" << endl;
 	cout << setw(w) << "     --help" << "This message" << endl;
 	cout << endl;
@@ -110,6 +114,22 @@ void handleArgs(QStringList args) {
 			fail(ok, "Error: missing or invalid height");
 			continue;
 		}
+		if (args[i] == "-sb" || args[i] == "--space-bottom") {
+			if (args.count()-1 < i+1)
+				ok = false;
+			else
+				space_bottom = args[++i].toInt(&ok);
+			fail(ok, "Error: missing or invalid space-bottom");
+			continue;
+		}
+		if (args[i] == "-sl" || args[i] == "--space-left") {
+			if (args.count()-1 < i+1)
+				ok = false;
+			else
+				space_left = args[++i].toInt(&ok);
+			fail(ok, "Error: missing or invalid space-left");
+			continue;
+		}
 		if (args[i] == "-s" || args[i] == "--screen") {
 			if (args.count()-1 < i+1)
 				ok = false;
@@ -166,7 +186,7 @@ QApplication* createApp(int argc, char *argv[]) {
 int main (int argc, char *argv[]) {
 	QApplication *app = createApp(argc, argv);
 
-	OSD osd(background, timeout, width, height, screen);
+	OSD osd(background, timeout, width, height, space_bottom, space_left, screen);
 
 	new DBusAdaptor(app, &osd);
 	QDBusConnection dbuscon = QDBusConnection::connectToBus(QDBusConnection::SessionBus, "qtosd");

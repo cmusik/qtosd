@@ -68,6 +68,9 @@ OSD::OSD(QString bg, float t, int w, int h, int s) : QWidget(), timeout(t) {
 
 	progressRegexp = new QRegExp("^(\\d+)/(\\d+)$");
 	fileRegexp = new QRegExp("^f:(/.*\\.png)");
+	// FIXME: don't why this helps, but with qt 4.6 it doesn't crash anymore
+	show();
+	hide();
 }
 
 OSD::~OSD() {

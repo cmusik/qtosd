@@ -47,5 +47,5 @@ void Reader::readSocket() {
 
 void Reader::closeConnection() {
 	connection->close();
-	terminate();
+	quit();
 }

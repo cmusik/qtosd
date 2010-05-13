@@ -17,7 +17,8 @@
 */
 #include "mixer.h"
 
-MixerThread::MixerThread() {
+MixerThread::MixerThread(const QString& d) {
+    alsa_mixer_device = strdup(d.toLatin1().data());
 	if (init_alsa())
 		start();
 }
@@ -195,7 +196,6 @@ Mixer* MixerThread::get_new_mixer() {
 }
 
 bool MixerThread::init_alsa() {
-	alsa_mixer_device = strdup("default");
 	if ((mixer = get_new_mixer()) == NULL) {
 		return false;
 	}

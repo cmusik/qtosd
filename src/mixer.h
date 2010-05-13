@@ -49,7 +49,7 @@ class MixerThread : public QThread {
 	Q_OBJECT
 
 	public:
-		MixerThread();
+		MixerThread(const QString&);
 		~MixerThread();
 		void run();
 

@@ -38,6 +38,7 @@ int screen = 0;
 int space_bottom = 50;
 int space_left = -1;
 QString name;
+QString device = "default";
 
 void usage(QString name) {
 	using namespace std;
@@ -48,6 +49,7 @@ void usage(QString name) {
 	cout << setw(w) << " -b, --background FILE" << "Set FILE as background image" << endl;
 	cout << setw(w) << " -p, --port PORT" << "Use PORT as TCP port for incoming connections (port 0 to disable TCP)" << endl;
 	cout << setw(w) << " -t, --timeout TIME" << "Show OSD for TIME seconds" << endl;
+	cout << setw(w) << " -d, --device DEVICE" << "Use this device instead of default" << endl;
 	cout << setw(w) << " -n, --no-daemon" << "Don't start in daemon mode" << endl;
 	cout << setw(w) << " -w, --width WIDTH" << "Width of OSD" << endl;
 	cout << setw(w) << " -h, --height HEIGHT" << "Height of OSD" << endl;
@@ -95,6 +97,14 @@ void handleArgs(QStringList args) {
 				ok = false;
 			else
 				timeout = args[++i].toFloat(&ok);
+			fail(ok, "Error: missing or invalid timeout value");
+			continue;
+		}
+		if (args[i] == "-d" || args[i] == "--device") {
+			if (args.count()-1 < i+1)
+				ok = false;
+			else
+				device = args[++i];
 			fail(ok, "Error: missing or invalid timeout value");
 			continue;
 		}
@@ -206,7 +216,7 @@ int main (int argc, char *argv[]) {
 		daemon(1, 1);
 	}
 
-	MixerThread *t = new MixerThread();
+	MixerThread *t = new MixerThread(device);
 	QObject::connect(t, SIGNAL(showText(QString)), &osd, SLOT(setText(QString)));
 
 	if (!t->isRunning()) {

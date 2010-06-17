@@ -5,5 +5,5 @@
 BEGIN{
 	getline current < "/sys/class/backlight/acpi_video0/actual_brightness"
 	getline max < "/sys/class/backlight/acpi_video0/max_brightness"
-	print current "/" max " Brightness" | "nc -c localhost 5000"
+	print current "/" max "%Brightness" | "nc -c localhost 5000"
 }

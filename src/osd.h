@@ -27,35 +27,35 @@
 #include "ui_osd.h"
 
 class OSD : public QWidget, private Ui::OSD {
-	Q_OBJECT
+    Q_OBJECT
 
-	public:
-		OSD(QString, float, int, int, int, int, int=0);
-		~OSD();
+    public:
+        OSD(QString, float, int, int, int, int, int=0);
+        ~OSD();
 
-	protected:
-		virtual void paintEvent(QPaintEvent*);
-		virtual void hideEvent(QHideEvent*);
-		virtual void mouseReleaseEvent(QMouseEvent*);
+    protected:
+        virtual void paintEvent(QPaintEvent*);
+        virtual void hideEvent(QHideEvent*);
+        virtual void mouseReleaseEvent(QMouseEvent*);
 
-	public slots:
-		void setText(QString);
-		void fadeOut();
-		void fadeIn();
+        public slots:
+            void setText(QString);
+        void fadeOut();
+        void fadeIn();
 
-	private:
-		void fitText(QLabel*, QString*, int);
-		void fitText(QLabel*, QStringList*);
+    private:
+        void fitText(QLabel*, QString*, int);
+        void fitText(QLabel*, QStringList*);
 
-		QTimer *timer;
-		QTimer *fadeOutTimer;
-		QTimer *fadeInTimer;
-		QStringList *textList;
-		QSvgRenderer *renderer;
-		QPixmap cache;
-		float timeout;
-		QRegExp *progressRegexp;
-		QRegExp *fileRegexp;
+        QTimer *timer;
+        QTimer *fadeOutTimer;
+        QTimer *fadeInTimer;
+        QStringList *textList;
+        QSvgRenderer *renderer;
+        QPixmap cache;
+        float timeout;
+        QRegExp *progressRegexp;
+        QRegExp *fileRegexp;
 
 };
 

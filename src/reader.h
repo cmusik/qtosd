@@ -26,21 +26,21 @@
 #define  READER_INC
 
 class Reader : public QThread {
-	Q_OBJECT
+    Q_OBJECT
 
-	public:
-		Reader(int);
-		~Reader();
+    public:
+        Reader(int);
+        ~Reader();
 
-	public slots:
-		void readSocket();
-		void closeConnection();
+        public slots:
+            void readSocket();
+        void closeConnection();
 
-	signals:
-		void receivedText(QString);
+signals:
+        void receivedText(QString);
 
-	private:
-		QTcpSocket *connection;
+    private:
+        QTcpSocket *connection;
 
 };
 

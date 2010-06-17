@@ -22,15 +22,15 @@
 #define  READERSERVER_INC
 
 class ReaderServer : public QTcpServer {
-	Q_OBJECT
+    Q_OBJECT
 
-	public:
-		ReaderServer(OSD *, QObject* = NULL);
+    public:
+        ReaderServer(OSD *, QObject* = NULL);
 
-	private:
-		virtual void incomingConnection(int);
+    private:
+        virtual void incomingConnection(int);
 
-		OSD *gui;
+        OSD *gui;
 };
 
 #endif

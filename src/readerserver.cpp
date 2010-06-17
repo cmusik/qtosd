@@ -22,8 +22,8 @@ ReaderServer::ReaderServer(OSD *g, QObject *parent) : QTcpServer(parent), gui(g)
 }
 
 void ReaderServer::incomingConnection(int socket) {
-	Reader *r = new Reader(socket);
-	connect(r, SIGNAL(receivedText(QString)), gui, SLOT(setText(QString)));
-	r->start();
+    Reader *r = new Reader(socket);
+    connect(r, SIGNAL(receivedText(QString)), gui, SLOT(setText(QString)));
+    r->start();
 }
 

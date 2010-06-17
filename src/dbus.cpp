@@ -21,13 +21,13 @@ DBusAdaptor::DBusAdaptor(QApplication *a, OSD *g) : QDBusAbstractAdaptor(a), gui
 }
 
 void DBusAdaptor::showText(QString s) {
-	gui->setText(s);
+    gui->setText(s);
 }
 
 void DBusAdaptor::quit() {
-	app->quit();
+    app->quit();
 }
 
 void DBusAdaptor::hide() {
-	gui->fadeOut();
+    gui->fadeOut();
 }

@@ -75,7 +75,7 @@ OSD::OSD(QString bg, float t, int w, int h, int sb, int sl, int s) : QWidget(), 
 	setWindowOpacity(0.1);
 
 	progressRegexp = new QRegExp("^(\\d+)/(\\d+)$");
-	fileRegexp = new QRegExp("^f:(/.*\\.png)");
+	fileRegexp = new QRegExp("^f:(/.*\\.(jpg|png))", Qt::CaseInsensitive);
 	// FIXME: don't why this helps, but with qt 4.6 it doesn't crash anymore
 	show();
 	hide();

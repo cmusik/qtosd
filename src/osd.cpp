@@ -48,6 +48,7 @@ OSD::OSD(QString bg, float t, int w, int h, int sb, int sl, int s) : QWidget(), 
         renderer = new QSvgRenderer(QString::fromUtf8(":/background/background.svg"), this);
 
     setFixedSize(w, h);
+    image->setFixedSize(h - 20, h - 20);
 
     cache = QPixmap(size());
     cache.fill(Qt::transparent);

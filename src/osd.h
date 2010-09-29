@@ -26,11 +26,16 @@
 
 #include "ui_osd.h"
 
+enum ShowMode {
+    Move,
+    Fade
+};
+
 class OSD : public QWidget, private Ui::OSD {
     Q_OBJECT
 
     public:
-        OSD(QString, float, int, int, int, int, int=0);
+        OSD(QString, float, int, int, int, int, ShowMode=Fade, int=0);
         ~OSD();
 
     protected:
@@ -38,8 +43,8 @@ class OSD : public QWidget, private Ui::OSD {
         virtual void hideEvent(QHideEvent*);
         virtual void mouseReleaseEvent(QMouseEvent*);
 
-        public slots:
-            void setText(QString);
+    public slots:
+        void setText(QString);
         void fadeOut();
         void fadeIn();
 
@@ -56,7 +61,8 @@ class OSD : public QWidget, private Ui::OSD {
         float timeout;
         QRegExp *progressRegexp;
         QRegExp *fileRegexp;
-
+        QRect screen;
+        ShowMode mode;
 };
 
 #endif

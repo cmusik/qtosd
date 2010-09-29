@@ -39,6 +39,7 @@ int space_bottom = 50;
 int space_left = -1;
 QString name;
 QString device = "default";
+ShowMode mode = Fade;
 
 void usage(QString name) {
     using namespace std;
@@ -56,6 +57,8 @@ void usage(QString name) {
     cout << setw(w) << " -sb, --space-bottom HEIGHT" << "Free space below OSD" << endl;
     cout << setw(w) << " -sl, --space-left HEIGHT" << "Free space left of OSD" << endl;
     cout << setw(w) << " -s, --screen SCREEN" << "Show OSD on SCREEN" << endl;
+    cout << setw(w) << " -f, --fade" << "Fade in/out OSD" << endl;
+    cout << setw(w) << " -m, --move" << "Move in/out OSD" << endl;
     cout << setw(w) << "     --help" << "This message" << endl;
     cout << endl;
     exit(0);
@@ -75,6 +78,14 @@ void handleArgs(QStringList args) {
         bool ok = true;
         if (args[i] == "-n" || args[i] == "--no-daemon") {
             daemonize = false;
+            continue;
+        }
+        if (args[i] == "-m" || args[i] == "--move") {
+            mode = Move;
+            continue;
+        }
+        if (args[i] == "-f" || args[i] == "--fade") {
+            mode = Fade;
             continue;
         }
         if (args[i] == "-b" || args[i] == "--background") {
@@ -196,7 +207,7 @@ QApplication* createApp(int argc, char *argv[]) {
 int main (int argc, char *argv[]) {
     QApplication *app = createApp(argc, argv);
 
-    OSD osd(background, timeout, width, height, space_bottom, space_left, screen);
+    OSD osd(background, timeout, width, height, space_bottom, space_left, mode, screen);
 
     new DBusAdaptor(app, &osd);
     QDBusConnection dbuscon = QDBusConnection::connectToBus(QDBusConnection::SessionBus, "qtosd");

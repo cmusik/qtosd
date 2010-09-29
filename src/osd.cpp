@@ -27,7 +27,7 @@
 
 #define MINFONTSIZE 12
 
-OSD::OSD(QString bg, float t, int w, int h, int sb, int sl, int s) : QWidget(), timeout(t) {
+OSD::OSD(QString bg, float t, int w, int h, int sb, int sl, ShowMode m, int s) : QWidget(), timeout(t), mode(m) {
     timer = new QTimer(this);
     fadeOutTimer = new QTimer(this);
     fadeInTimer = new QTimer(this);
@@ -62,24 +62,27 @@ OSD::OSD(QString bg, float t, int w, int h, int sb, int sl, int s) : QWidget(), 
     }
 
     QDesktopWidget desktop;
-    QRect r = desktop.screenGeometry(s);
+    screen = desktop.screenGeometry(s);
     int x = 0;
-    int y = r.y()+((r.height()-height()))-sb;
+    int y = screen.y()+((screen.height()-height()))-sb;
 
     if (sl >= 0)
-        x = r.x()+sl;
+        x = screen.x()+sl;
     else
-        x = r.x()+((r.width()-width())/2);
+        x = screen.x()+((screen.width()-width())/2);
 
     move(x, y);
     textList = new QStringList();
-    setWindowOpacity(0.1);
+    if (mode == Fade) {
+        setWindowOpacity(0.1);
+    }
 
     progressRegexp = new QRegExp("^(\\d+)/(\\d+)$");
     fileRegexp = new QRegExp("^f:(/.*\\.(jpg|png))", Qt::CaseInsensitive);
-    // FIXME: don't why this helps, but with qt 4.6 it doesn't crash anymore
+    // FIXME: don't why this helps, but with qt >=4.6 it doesn't crash anymore
     show();
     hide();
+    fadeOut();
 }
 
 OSD::~OSD() {
@@ -236,24 +239,59 @@ void OSD::hideEvent(QHideEvent *) {
 void OSD::fadeOut() {
     qreal w;
     fadeInTimer->stop();
-    if ((w = windowOpacity()) > 0.1) {
-        fadeOutTimer->start(25);
-        setWindowOpacity(w - 0.1);
+
+    switch(mode) {
+        case Move:
+            int y;
+
+            if ((y = pos().y()) < screen.height()) {
+                fadeOutTimer->start(5);
+                move(0, y+5);
+            }
+            else {
+                hide();
+            }
+            break;
+
+        case Fade:
+        default:
+            if ((w = windowOpacity()) > 0.1) {
+                fadeOutTimer->start(25);
+                setWindowOpacity(w - 0.1);
+            }
+            else {
+                hide();
+            }
     }
-    else {
-        hide();
-    }
+
+
 }
 
 void OSD::fadeIn() {
     qreal w;
     show();
     fadeOutTimer->stop();
-    if ((w = windowOpacity()) <= 0.9) {
-        fadeInTimer->start(25);
-        setWindowOpacity(w + 0.1);
+
+    switch(mode) {
+        case Move:
+            int y;
+
+            if ((y = pos().y()) > screen.height()-height()) {
+                fadeInTimer->start(5);
+                move(0, y-5);
+            }
+            break;
+
+        case Fade:
+        default:
+            if ((w = windowOpacity()) <= 0.9) {
+                fadeInTimer->start(25);
+                setWindowOpacity(w + 0.1);
+            }
+            else {
+                setWindowOpacity(1);
+            }
+            break;
     }
-    else {
-        setWindowOpacity(1);
-    }
+
 }

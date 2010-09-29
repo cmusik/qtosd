@@ -28,6 +28,8 @@ There are some parameters you can use:
  -s, --screen SCREEN        Show OSD on SCREEN
  -sb, --space-bottom HEIGHT Free space below OSD
  -sl, --space-left HEIGHT   Free space left of OSD
+ -f, --fade                 Fade in/out OSD
+ -m, --move                 Move in/out OSD
 
 
 The text you send can also have a special format:

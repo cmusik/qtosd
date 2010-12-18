@@ -164,6 +164,7 @@ void OSD::setText(QString s) {
     if (lines == 1)
         textList->clear();
 
+    raise();
     setUpdatesEnabled(true);
 }
 

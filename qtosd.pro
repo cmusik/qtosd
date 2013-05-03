@@ -7,7 +7,7 @@ OBJECTS_DIR = .obj
 UI_DIR = .ui
 RCC_DIR = .rcc
 QMAKE_CXXFLAGS = -I/usr/include/alsa -lasound
-LIBS += -lasound
+LIBS += -lasound -lXrender -lX11
 QT += svg network dbus
 CONFIG += silent
 

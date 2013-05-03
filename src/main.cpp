@@ -168,7 +168,6 @@ void handleArgs(QStringList args) {
 }
 
 QApplication* createApp(int argc, char *argv[]) {
-    bool  argbVisual=false;
     Colormap colormap = 0;
     Visual *visual = 0;
     Display *dpy = XOpenDisplay(0); // open default display
@@ -194,7 +193,6 @@ QApplication* createApp(int argc, char *argv[]) {
             if (format->type == PictTypeDirect && format->direct.alphaMask) {
                 visual = xvi[i].visual;
                 colormap = XCreateColormap(dpy, RootWindow(dpy, xscreen), visual, AllocNone);
-                argbVisual=true;
                 break;
             }
         }
@@ -224,7 +222,11 @@ int main (int argc, char *argv[]) {
     }
 
     if (daemonize) {
-        daemon(1, 1);
+        int r = daemon(1, 1);
+        if (r != 0) {
+            std::cerr << "Couldn't daemonize" << std::endl;
+            return -1;
+        }
     }
 
     MixerThread *t = new MixerThread(device);

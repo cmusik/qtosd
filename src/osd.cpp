@@ -99,7 +99,6 @@ void OSD::setText(QString s) {
     QRegExp rx("^(\\((.+)\\))*(.*)");
 
     // show everything, to get proper size
-    timer->start(int (timeout*1000));
     if (isHidden() || fadeOutTimer->isActive()) {
         fadeIn();
     }
@@ -237,6 +236,13 @@ void OSD::hideEvent(QHideEvent *) {
     textList->clear();
 }
 
+void OSD::toggleView() {
+    if (isVisible())
+        fadeOut();
+    else
+        fadeIn();
+}
+
 void OSD::fadeOut() {
     qreal w;
     fadeInTimer->stop();
@@ -270,6 +276,7 @@ void OSD::fadeOut() {
 
 void OSD::fadeIn() {
     qreal w;
+    timer->start(int (timeout*1000));
     show();
     fadeOutTimer->stop();
 

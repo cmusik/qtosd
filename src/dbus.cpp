@@ -31,3 +31,7 @@ void DBusAdaptor::quit() {
 void DBusAdaptor::hide() {
     gui->fadeOut();
 }
+
+void DBusAdaptor::showAgain() {
+    gui->toggleView();
+}

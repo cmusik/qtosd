@@ -29,10 +29,11 @@ class DBusAdaptor : public QDBusAbstractAdaptor {
     public:
         DBusAdaptor(QApplication*, OSD*);
 
-        public slots:
-            Q_NOREPLY void showText(QString);
+    public slots:
+        Q_NOREPLY void showText(QString);
         Q_NOREPLY void quit();
         Q_NOREPLY void hide();
+        Q_NOREPLY void showAgain();
 
     private:
         OSD *gui;

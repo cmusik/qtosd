@@ -47,6 +47,7 @@ class OSD : public QWidget, private Ui::OSD {
         void setText(QString);
         void fadeOut();
         void fadeIn();
+        void toggleView();
 
     private:
         void fitText(QLabel*, QString*, int);
